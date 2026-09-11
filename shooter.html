@@ -600,6 +600,7 @@
                 './villain/4.png',
                 './villain/5.png'
             ];
+            const RARE_VILLAIN_IMAGE = './villain/6.png';
 
             const game = document.getElementById('game');
             const targetsLayer = document.getElementById('targetsLayer');
@@ -790,7 +791,9 @@
                 target.className = 'target';
 
                 const img = document.createElement('img');
-                const imagePath = VILLAIN_IMAGES[nextPhotoIndex % VILLAIN_IMAGES.length];
+                const imagePath = Math.random() < 0.18
+                    ? RARE_VILLAIN_IMAGE
+                    : VILLAIN_IMAGES[nextPhotoIndex % VILLAIN_IMAGES.length];
                 nextPhotoIndex += 1;
                 img.src = imagePath;
                 img.alt = 'Villain target';

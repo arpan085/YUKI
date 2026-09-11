@@ -304,7 +304,11 @@ function renderFighterCards() {
 function startBattle(selectedFighterId) {
   const playerDefinition = fighterDefinitions.find((fighter) => fighter.id === selectedFighterId) || fighterDefinitions[0];
   const enemyCandidates = fighterDefinitions.filter((fighter) => fighter.role === 'opponent');
-  const enemyDefinition = enemyCandidates[Math.floor(Math.random() * enemyCandidates.length)] || fighterDefinitions.find((fighter) => fighter.id === 'villain1');
+  const rareEnemy = enemyCandidates.find((fighter) => fighter.id === 'villain6');
+  const regularEnemies = enemyCandidates.filter((fighter) => fighter.id !== 'villain6');
+  const enemyDefinition = Math.random() < 0.18 && rareEnemy
+    ? rareEnemy
+    : regularEnemies[Math.floor(Math.random() * regularEnemies.length)] || rareEnemy || fighterDefinitions.find((fighter) => fighter.id === 'villain1');
 
   state.player = createFighter(playerDefinition, 'player', 300);
   state.enemy = createFighter(enemyDefinition, 'enemy', 980);

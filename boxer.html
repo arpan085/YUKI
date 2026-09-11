@@ -72,19 +72,23 @@
       </div>
 
       <div id="touchControls" class="hidden">
-        <div class="controls-row movement">
-          <button type="button" class="touch-button" data-action="left">?</button>
-          <button type="button" class="touch-button" data-action="right">?</button>
+        <div class="touch-controls-left">
+          <div id="joystickPad" class="joystick-pad" aria-label="Movement joystick">
+            <div id="joystickKnob" class="joystick-knob"></div>
+          </div>
         </div>
-        <div class="controls-row actions">
-          <button type="button" class="touch-button action" data-action="jab">JAB</button>
-          <button type="button" class="touch-button action" data-action="cross">CROSS</button>
-          <button type="button" class="touch-button action" data-action="hook">HOOK</button>
-          <button type="button" class="touch-button action" data-action="uppercut">UPPER</button>
-        </div>
-        <div class="controls-row extra">
-          <button type="button" class="touch-button action" data-action="block">BLOCK</button>
-          <button type="button" class="touch-button action" data-action="dodge">DODGE</button>
+
+        <div class="right-controls">
+          <div class="controls-row actions">
+            <button type="button" class="touch-button action" data-action="jab">JAB</button>
+            <button type="button" class="touch-button action" data-action="cross">CROSS</button>
+            <button type="button" class="touch-button action" data-action="hook">HOOK</button>
+            <button type="button" class="touch-button action" data-action="uppercut">UPPER</button>
+          </div>
+          <div class="controls-row extra">
+            <button type="button" class="touch-button action" data-action="block">BLOCK</button>
+            <button type="button" class="touch-button action" data-action="dodge">DODGE</button>
+          </div>
         </div>
       </div>
 

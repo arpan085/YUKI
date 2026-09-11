@@ -98,6 +98,16 @@ export const fighterDefinitions = [
     stats: { power: 1.08, speed: 1.14, defense: 0.96, stamina: 1.08 },
     aura: '#b7ffc9',
     artPath: './villain/5.png'
+  },
+  {
+    id: 'villain6',
+    role: 'opponent',
+    name: 'VILLAIN 6',
+    tag: 'Rare Rival',
+    colors: { primary: '#d7a2ff', secondary: '#f3dec7', accent: '#ffe0ff', glove: '#f7f4ff' },
+    stats: { power: 1.3, speed: 1.16, defense: 1.06, stamina: 1.1 },
+    aura: '#efc3ff',
+    artPath: './villain/6.png'
   }
 ];
 
