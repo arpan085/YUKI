@@ -185,6 +185,25 @@
             padding-top: 10px;
         }
 
+        .play-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #ffbf69 0%, #ff8aaa 100%);
+            color: #2c1d1d;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 10px 18px rgba(255, 150, 134, 0.25);
+            transition: transform 0.12s ease;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-1px);
+        }
+
         .score-badge {
             background: rgba(255,255,255,0.7);
             border-radius: 999px;
@@ -347,6 +366,17 @@
                 </div>
                 <p>Hit the glowing target every time it appears and build your streak.</p>
                 <a class="play-btn" href="tap.html">Play Game</a>
+            </div>
+
+            <div class="game-card">
+                <div class="game-header">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #f6d9c7 0%, #f0b7ae 100%);">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5 10 6l4 10m-7 0h10M9 11h6"/><path d="M15 6h3v3"/></svg>
+                    </div>
+                    <h2>Boxing Game</h2>
+                </div>
+                <p>Jump into a playable arcade boxing match with fighter selection, stamina, combos, blocks, and a home button.</p>
+                <a class="play-btn" href="boxer.html">Play Game</a>
             </div>
 
             <div class="game-card">

@@ -2,170 +2,696 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tap Rush</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f0c29">
+    <title>NEON RUSH: OVERDRIVE</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Grotesk:wght@400;700&display=swap');
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-gold: #ffd700;
+            --bg-dark: #0a0a12;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: none;
+        }
 
         body {
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(180deg, #f7efe6 0%, #f0e2d3 100%);
-            color: #2c1d1d;
-            display: flex;
-            justify-content: center;
-            padding: 24px 16px;
-        }
-
-        .game-shell {
-            width: min(760px, 100%);
-            background: rgba(255,255,255,0.42);
-            border: 1px solid rgba(58, 41, 47, 0.08);
-            border-radius: 28px;
-            box-shadow: 0 18px 40px rgba(74, 54, 62, 0.08);
-            padding: 22px;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 18px;
-        }
-
-        .back-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            background: rgba(255,255,255,0.72);
-            color: #2c1d1d;
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 5vw, 2.8rem);
-            font-weight: 600;
-        }
-
-        .status-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 22px;
-            flex-wrap: wrap;
-        }
-
-        .score {
-            background: rgba(255,255,255,0.7);
-            border-radius: 999px;
-            padding: 9px 14px;
-            font-weight: 700;
-            color: #5a3e45;
-        }
-
-        .small-btn {
-            border: none;
-            background: linear-gradient(135deg, #ffbf69 0%, #ff8aaa 100%);
-            color: #2c1d1d;
-            font-weight: 700;
-            border-radius: 999px;
-            padding: 10px 16px;
-            cursor: pointer;
-            box-shadow: 0 10px 18px rgba(255, 150, 134, 0.25);
-        }
-
-        .tap-stage {
-            position: relative;
-            height: 420px;
-            border-radius: 24px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.32), rgba(250,226,196,0.18));
-            border: 1px dashed rgba(91, 76, 86, 0.18);
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: white;
+            height: 100dvh;
+            width: 100vw;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
 
-        .tap-target {
+        /* Animated Background Mesh */
+        .bg-mesh {
             position: absolute;
-            width: 72px;
-            height: 72px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(255, 0, 255, 0.15), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.15), transparent 40%);
+            animation: meshMove 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes meshMove {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        /* HUD */
+        .hud {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            padding-top: max(16px, env(safe-area-inset-top));
+            background: linear-gradient(to bottom, rgba(10,10,18,0.9), transparent);
+        }
+
+        .stat-box {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 12px 18px;
+            text-align: center;
+            min-width: 80px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .stat-value.combo { color: var(--neon-cyan); }
+        .stat-value.score { color: var(--neon-gold); }
+        .stat-value.time { color: var(--neon-pink); }
+
+        .fever-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .fever-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            box-shadow: 0 0 15px var(--neon-cyan);
+            transition: width 0.3s ease-out;
+        }
+
+        .fever-active .fever-bar {
+            background: linear-gradient(90deg, var(--neon-gold), #ff4500);
+            box-shadow: 0 0 20px var(--neon-gold);
+            animation: feverPulse 0.5s infinite alternate;
+        }
+
+        @keyframes feverPulse {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+
+        /* Game Stage */
+        .stage-container {
+            flex: 1;
+            position: relative;
+            z-index: 5;
+            margin: 10px;
+            border-radius: 24px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #particleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* The Target */
+        .target {
+            position: absolute;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            border: none;
+            background: radial-gradient(circle at 30% 30%, #fff, var(--neon-cyan));
+            box-shadow: 
+                0 0 20px var(--neon-cyan),
+                0 0 40px rgba(0, 243, 255, 0.4),
+                inset 0 0 10px rgba(255,255,255,0.8);
             cursor: pointer;
-            background: radial-gradient(circle at 35% 30%, #fff1b2 0%, #ffc857 38%, #ff9a63 100%);
-            box-shadow: 0 15px 25px rgba(255, 149, 103, 0.32);
+            z-index: 10;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
-            color: #5e2a2a;
-            transition: transform 0.12s ease;
+            font-size: 1.5rem;
+            color: #000;
+            font-weight: 900;
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: transform, left, top;
         }
 
-        .tap-target:active {
-            transform: scale(0.94);
+        .target::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--neon-cyan);
+            animation: targetPulse 1.5s infinite;
         }
 
-        @media (max-width: 640px) {
-            .topbar { align-items: flex-start; }
+        .target.fever {
+            background: radial-gradient(circle at 30% 30%, #fff, var(--neon-gold));
+            box-shadow: 
+                0 0 30px var(--neon-gold),
+                0 0 60px rgba(255, 215, 0, 0.6);
+            width: 80px;
+            height: 80px;
+        }
+
+        .target.fever::before {
+            border-color: var(--neon-gold);
+            animation-duration: 0.5s;
+        }
+
+        .target.shrinking::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid var(--neon-pink);
+            animation: shrinkRing 1.2s linear forwards;
+        }
+
+        @keyframes targetPulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        @keyframes shrinkRing {
+            0% { width: 120%; height: 120%; opacity: 1; }
+            100% { width: 0%; height: 0%; opacity: 0; }
+        }
+
+        .target:active {
+            transform: scale(0.85);
+        }
+
+        /* Floating Text */
+        .float-text {
+            position: absolute;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 900;
+            font-size: 1.4rem;
+            pointer-events: none;
+            z-index: 20;
+            animation: floatUp 0.8s ease-out forwards;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-60px) scale(1); opacity: 0; }
+        }
+
+        /* Screen Shake */
+        .shake {
+            animation: screenShake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes screenShake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Overlays */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 18, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+
+        .overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .overlay h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .overlay p {
+            color: rgba(255,255,255,0.7);
+            font-size: 1.1rem;
+            text-align: center;
+            max-width: 280px;
+            line-height: 1.5;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            border: none;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            padding: 18px 48px;
+            border-radius: 99px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .final-score {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--neon-gold);
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Fever Mode Global Effects */
+        body.fever-mode {
+            animation: bgFever 2s infinite alternate;
+        }
+
+        @keyframes bgFever {
+            from { background-color: #0a0a12; }
+            to { background-color: #1a0b1a; }
+        }
+
+        .combo-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--neon-gold);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+            text-shadow: 0 0 40px var(--neon-gold);
+        }
+
+        .combo-text.pop {
+            animation: comboPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes comboPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) translateY(-50px); opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="game-shell">
-        <div class="topbar">
-            <a class="back-btn" href="games.html" aria-label="Back to games">←</a>
-            <h1>Tap Rush</h1>
-        </div>
 
-        <div class="status-row">
-            <div class="score" id="tapScore">Score: 0</div>
-            <button class="small-btn" id="resetTap">Restart</button>
-        </div>
+    <div class="bg-mesh"></div>
 
-        <div class="tap-stage" id="tapStage">
-            <button id="tapTarget" class="tap-target" aria-label="Tap target">★</button>
+    <div class="hud">
+        <div class="stat-box">
+            <div class="stat-label">Score</div>
+            <div class="stat-value score" id="scoreDisplay">0</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Combo</div>
+            <div class="stat-value combo" id="comboDisplay">x1</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Time</div>
+            <div class="stat-value time" id="timeDisplay">30</div>
+        </div>
+        <div class="fever-bar-container">
+            <div class="fever-bar" id="feverBar"></div>
         </div>
     </div>
 
+    <div class="stage-container" id="stage">
+        <canvas id="particleCanvas"></canvas>
+        <div class="target" id="target">⚡</div>
+        <div class="combo-text" id="comboText">FEVER!</div>
+    </div>
+
+    <!-- Start Overlay -->
+    <div class="overlay" id="startOverlay">
+        <h2>NEON RUSH<br>OVERDRIVE</h2>
+        <p>Tap the targets before they shrink!<br>Build combos to activate FEVER MODE.<br>30 Seconds. Maximum Chaos.</p>
+        <button class="btn-primary" id="startBtn">INITIATE</button>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div class="overlay hidden" id="gameOverOverlay">
+        <h2>TIME'S UP</h2>
+        <div class="final-score" id="finalScore">0</div>
+        <p id="finalMessage">Not bad, but can you go faster?</p>
+        <button class="btn-primary" id="restartBtn">RETRY</button>
+    </div>
+
     <script>
-        const tapStage = document.getElementById('tapStage');
-        const tapTarget = document.getElementById('tapTarget');
-        const tapScore = document.getElementById('tapScore');
-        const resetTap = document.getElementById('resetTap');
-        let tapCount = 0;
+        // --- Game State ---
+        const state = {
+            score: 0,
+            combo: 0,
+            multiplier: 1,
+            timeLeft: 30,
+            isPlaying: false,
+            feverMode: false,
+            feverMeter: 0,
+            lastTapTime: 0,
+            targetShrinkTimer: null
+        };
+
+        // --- DOM Elements ---
+        const stage = document.getElementById('stage');
+        const target = document.getElementById('target');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const comboDisplay = document.getElementById('comboDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const feverBar = document.getElementById('feverBar');
+        const startOverlay = document.getElementById('startOverlay');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const finalScore = document.getElementById('finalScore');
+        const finalMessage = document.getElementById('finalMessage');
+        const comboText = document.getElementById('comboText');
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- Canvas Setup (High DPI) ---
+        function resizeCanvas() {
+            const rect = stage.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // --- Particle System ---
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.life = 1;
+                this.decay = Math.random() * 0.03 + 0.02;
+                this.size = Math.random() * 4 + 2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.1; // gravity
+                this.life -= this.decay;
+                this.size *= 0.95;
+            }
+            draw() {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        let particles = [];
+        function spawnParticles(x, y, color, count = 12) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width / window.devicePixelRatio, canvas.height / window.devicePixelRatio);
+            particles = particles.filter(p => p.life > 0);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // --- Game Logic ---
+        function updateDisplay() {
+            scoreDisplay.textContent = state.score;
+            comboDisplay.textContent = `x${state.multiplier}`;
+            timeDisplay.textContent = state.timeLeft;
+            
+            // Fever bar logic
+            const feverPercent = Math.min((state.feverMeter / 10) * 100, 100);
+            feverBar.style.width = feverPercent + '%';
+            
+            if (state.feverMeter >= 10 && !state.feverMode) {
+                activateFeverMode();
+            }
+        }
+
+        function activateFeverMode() {
+            state.feverMode = true;
+            state.multiplier = 3;
+            document.body.classList.add('fever-mode');
+            stage.classList.add('fever-active');
+            target.classList.add('fever');
+            
+            // Visual pop
+            comboText.textContent = "FEVER MODE!";
+            comboText.classList.add('pop');
+            setTimeout(() => comboText.classList.remove('pop'), 600);
+            
+            // Haptic
+            if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+        }
+
+        function deactivateFeverMode() {
+            state.feverMode = false;
+            state.multiplier = 1;
+            state.feverMeter = 0;
+            document.body.classList.remove('fever-mode');
+            stage.classList.remove('fever-active');
+            target.classList.remove('fever');
+            updateDisplay();
+        }
 
         function moveTarget() {
-            const maxX = tapStage.clientWidth - tapTarget.offsetWidth;
-            const maxY = tapStage.clientHeight - tapTarget.offsetHeight;
-            const x = Math.random() * Math.max(maxX, 1);
-            const y = Math.random() * Math.max(maxY, 1);
-            tapTarget.style.left = `${x}px`;
-            tapTarget.style.top = `${y}px`;
+            const stageRect = stage.getBoundingClientRect();
+            const targetSize = state.feverMode ? 80 : 70;
+            const maxX = stageRect.width - targetSize;
+            const maxY = stageRect.height - targetSize;
+            
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            
+            target.style.left = `${x}px`;
+            target.style.top = `${y}px`;
+            
+            // Reset shrink animation
+            target.classList.remove('shrinking');
+            void target.offsetWidth; // trigger reflow
+            target.classList.add('shrinking');
+            
+            // Clear old shrink timer
+            if (state.targetShrinkTimer) clearTimeout(state.targetShrinkTimer);
+            
+            // If not tapped in time, break combo (advanced mechanic)
+            state.targetShrinkTimer = setTimeout(() => {
+                if (state.isPlaying) {
+                    state.combo = 0;
+                    state.multiplier = state.feverMode ? 3 : 1;
+                    state.feverMeter = Math.max(0, state.feverMeter - 3);
+                    createFloatingText(x + targetSize/2, y, "MISS", "#ff0055");
+                    updateDisplay();
+                    moveTarget();
+                }
+            }, 1200); // 1.2 seconds to tap
         }
 
-        function resetTapGame() {
-            tapCount = 0;
-            tapScore.textContent = 'Score: 0';
+        function createFloatingText(x, y, text, color) {
+            const el = document.createElement('div');
+            el.className = 'float-text';
+            el.textContent = text;
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            el.style.color = color;
+            stage.appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+
+        function handleTap(e) {
+            if (!state.isPlaying) return;
+            e.preventDefault(); // Prevent zoom/scroll
+            
+            const now = Date.now();
+            const rect = target.getBoundingClientRect();
+            const stageRect = stage.getBoundingClientRect();
+            const centerX = rect.left - stageRect.left + rect.width / 2;
+            const centerY = rect.top - stageRect.top + rect.height / 2;
+            
+            // Combo logic
+            if (now - state.lastTapTime < 800) {
+                state.combo++;
+            } else {
+                state.combo = 1;
+            }
+            state.lastTapTime = now;
+            
+            // Multiplier scaling
+            if (!state.feverMode) {
+                if (state.combo >= 10) state.multiplier = 3;
+                else if (state.combo >= 5) state.multiplier = 2;
+                else state.multiplier = 1;
+            }
+            
+            // Score calculation
+            const points = 10 * state.multiplier;
+            state.score += points;
+            
+            // Fever meter
+            if (!state.feverMode) {
+                state.feverMeter = Math.min(state.feverMeter + 1, 10);
+            }
+            
+            // Visuals & Haptics
+            spawnParticles(centerX, centerY, state.feverMode ? '#ffd700' : '#00f3ff', state.feverMode ? 20 : 12);
+            createFloatingText(centerX, centerY - 20, `+${points}`, state.feverMode ? '#ffd700' : '#00f3ff');
+            
+            if (navigator.vibrate) navigator.vibrate(state.feverMode ? 30 : 15);
+            
+            // Screen shake on high combo
+            if (state.combo % 5 === 0 && state.combo > 0) {
+                stage.classList.add('shake');
+                setTimeout(() => stage.classList.remove('shake'), 300);
+            }
+            
+            updateDisplay();
             moveTarget();
         }
 
-        tapTarget.addEventListener('click', () => {
-            tapCount += 1;
-            tapScore.textContent = `Score: ${tapCount}`;
+        // --- Game Loop (Timer) ---
+        let gameInterval;
+        function startGame() {
+            state.score = 0;
+            state.combo = 0;
+            state.multiplier = 1;
+            state.timeLeft = 30;
+            state.isPlaying = true;
+            state.feverMode = false;
+            state.feverMeter = 0;
+            
+            startOverlay.classList.add('hidden');
+            gameOverOverlay.classList.add('hidden');
+            document.body.classList.remove('fever-mode');
+            stage.classList.remove('fever-active');
+            target.classList.remove('fever');
+            
+            updateDisplay();
             moveTarget();
-        });
+            
+            gameInterval = setInterval(() => {
+                state.timeLeft--;
+                timeDisplay.textContent = state.timeLeft;
+                
+                if (state.timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
 
-        resetTap.addEventListener('click', resetTapGame);
-        resetTapGame();
+        function endGame() {
+            state.isPlaying = false;
+            clearInterval(gameInterval);
+            if (state.targetShrinkTimer) clearTimeout(state.targetShrinkTimer);
+            
+            finalScore.textContent = state.score;
+            
+            if (state.score > 1500) finalMessage.textContent = "ABSOLUTE LEGEND. GODLIKE REFLEXES.";
+            else if (state.score > 800) finalMessage.textContent = "Impressive! You have the touch.";
+            else finalMessage.textContent = "Good start! Tap faster and build those combos.";
+            
+            gameOverOverlay.classList.remove('hidden');
+            
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        }
+
+        // --- Event Listeners ---
+        // Use pointerdown for instant response on both mobile and desktop
+        target.addEventListener('pointerdown', handleTap);
+        
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('restartBtn').addEventListener('click', startGame);
+
+        // Prevent context menu on long press (mobile)
+        window.oncontextmenu = function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        };
     </script>
 </body>
 </html>

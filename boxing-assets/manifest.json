@@ -1,0 +1,48 @@
+{
+  "fighterSheets": {
+    "red": "fighters/boxer-red-sheet.svg",
+    "blue": "fighters/boxer-blue-sheet.svg"
+  },
+  "backgrounds": {
+    "ring": "backgrounds/boxing-ring.svg",
+    "crowd": "crowd/crowd.svg"
+  },
+  "effects": {
+    "punchFlash": "effects/punch-flash.svg",
+    "sparkSheet": "effects/hit-spark-sheet.svg",
+    "knockdownSheet": "effects/knockdown-sheet.svg",
+    "dustParticle": "effects/dust-particle.svg"
+  },
+  "ui": {
+    "healthBar": "ui/health-bar.svg",
+    "staminaBar": "ui/stamina-bar.svg",
+    "button": "ui/button.svg",
+    "roundIndicator": "ui/round-indicator.svg",
+    "koBanner": "ui/ko-banner.svg",
+    "victoryPanel": "ui/victory-panel.svg",
+    "defeatPanel": "ui/defeat-panel.svg"
+  },
+  "audio": {
+    "jab": "audio/jab.wav",
+    "cross": "audio/cross.wav",
+    "hook": "audio/hook.wav",
+    "uppercut": "audio/uppercut.wav",
+    "bodyHit": "audio/body-hit.wav",
+    "headHit": "audio/head-hit.wav",
+    "block": "audio/block.wav",
+    "guardBreak": "audio/guard-break.wav",
+    "knockdown": "audio/knockdown.wav",
+    "ko": "audio/ko.wav",
+    "bell": "audio/bell.wav",
+    "crowdNormal": "audio/crowd-normal.wav",
+    "crowdCheer": "audio/crowd-cheer.wav",
+    "crowdBoo": "audio/crowd-boo.wav",
+    "menuClick": "audio/menu-click.wav",
+    "menuHover": "audio/menu-hover.wav",
+    "victory": "audio/victory.wav",
+    "defeat": "audio/defeat.wav"
+  },
+  "fonts": {
+    "css": "fonts.css"
+  }
+}

@@ -1,0 +1,21 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+  <g opacity="0.85">
+    <circle cx="60" cy="68" r="28" fill="#ffcc70"/>
+    <rect x="36" y="96" width="48" height="62" rx="16" fill="#d37272"/>
+    <line x1="42" y1="120" x2="18" y2="164" stroke="#d37272" stroke-width="8" stroke-linecap="round"/>
+    <line x1="78" y1="120" x2="104" y2="164" stroke="#d37272" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.75" transform="translate(120 0)">
+    <circle cx="60" cy="68" r="28" fill="#ffcc70"/>
+    <rect x="36" y="96" width="48" height="62" rx="16" fill="#d37272"/>
+    <line x1="42" y1="120" x2="18" y2="164" stroke="#d37272" stroke-width="8" stroke-linecap="round"/>
+    <line x1="78" y1="120" x2="104" y2="164" stroke="#d37272" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.65" transform="translate(240 0)">
+    <circle cx="60" cy="68" r="28" fill="#ffcc70"/>
+    <rect x="36" y="96" width="48" height="62" rx="16" fill="#d37272"/>
+    <line x1="42" y1="120" x2="18" y2="164" stroke="#d37272" stroke-width="8" stroke-linecap="round"/>
+    <line x1="78" y1="120" x2="104" y2="164" stroke="#d37272" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="680" viewBox="0 0 560 680">
+  <rect width="560" height="680" fill="#0b1019"/>
+  <g transform="translate(20 20)">
+    <g transform="translate(0 0)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <circle cx="62" cy="50" r="2.5" fill="#2b1d1c"/>
+      <circle cx="78" cy="50" r="2.5" fill="#2b1d1c"/>
+      <line x1="62" y1="60" x2="78" y2="60" stroke="#7c3c3c" stroke-width="2" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Idle</text>
+    </g>
+    <g transform="translate(140 0)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="60" y1="114" x2="40" y2="138" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <line x1="80" y1="114" x2="100" y2="132" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Walk</text>
+    </g>
+    <g transform="translate(280 0)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="82" y1="96" x2="118" y2="106" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Jab</text>
+    </g>
+    <g transform="translate(420 0)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="80" y1="90" x2="132" y2="96" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Cross</text>
+    </g>
+    <g transform="translate(0 170)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="84" y1="92" x2="122" y2="128" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Hook</text>
+    </g>
+    <g transform="translate(140 170)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="82" y1="94" x2="106" y2="40" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Uppercut</text>
+    </g>
+    <g transform="translate(280 170)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="52" y1="108" x2="38" y2="128" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <line x1="92" y1="108" x2="108" y2="128" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Block</text>
+    </g>
+    <g transform="translate(420 170)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="60" y1="110" x2="38" y2="130" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <line x1="82" y1="110" x2="104" y2="128" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Dodge</text>
+    </g>
+    <g transform="translate(0 340)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="52" y1="112" x2="36" y2="134" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <line x1="82" y1="104" x2="96" y2="128" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Hurt</text>
+    </g>
+    <g transform="translate(140 340)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="56" y1="110" x2="36" y2="126" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <line x1="86" y1="110" x2="114" y2="130" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Stagger</text>
+    </g>
+    <g transform="translate(280 340)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="40" y1="120" x2="28" y2="164" stroke="#2d4e8b" stroke-width="8" stroke-linecap="round"/>
+      <line x1="98" y1="120" x2="112" y2="164" stroke="#2d4e8b" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">KO</text>
+    </g>
+    <g transform="translate(420 340)">
+      <circle cx="70" cy="58" r="18" fill="#f5d3be"/>
+      <rect x="54" y="76" width="32" height="42" rx="12" fill="#3b68d6"/>
+      <rect x="48" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="72" y="118" width="16" height="72" rx="8" fill="#dbe1f3"/>
+      <rect x="52" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <rect x="74" y="192" width="14" height="88" rx="7" fill="#d9bb75"/>
+      <line x1="54" y1="118" x2="70" y2="90" stroke="#d9bb75" stroke-width="8" stroke-linecap="round"/>
+      <text x="72" y="250" font-size="16" font-family="Arial" text-anchor="middle" fill="#f5e9d5">Get up</text>
+    </g>
+  </g>
+</svg>

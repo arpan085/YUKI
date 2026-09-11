@@ -1,0 +1,12 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <defs>
+    <radialGradient id="flash" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff4c7" stop-opacity="1"/>
+      <stop offset="38%" stop-color="#ffd77b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ff8c42" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="90" cy="90" r="78" fill="url(#flash)"/>
+  <circle cx="90" cy="90" r="38" fill="#fff4d5" opacity="0.9"/>
+</svg>

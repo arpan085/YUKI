@@ -1,0 +1,7 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="260" viewBox="0 0 540 260">
+  <rect width="540" height="260" rx="30" fill="#111827" opacity="0.9"/>
+  <rect x="24" y="24" width="492" height="212" rx="22" fill="#f1d39a" opacity="0.14"/>
+  <text x="270" y="110" font-family="Orbitron, Arial" font-size="62" font-weight="800" text-anchor="middle" fill="#f9deb0">VICTORY</text>
+  <text x="270" y="170" font-family="Orbitron, Arial" font-size="24" font-weight="600" text-anchor="middle" fill="#e8e3d5">YOU WIN</text>
+</svg>

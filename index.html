@@ -191,7 +191,7 @@
         /* Vertical Text Layout */
         .text-container {
             position: absolute;
-            left: 40px;
+            left: 18px;
             top: 53%;
             transform: translateY(-50%);
             display: flex;
@@ -207,7 +207,7 @@
 
         .vertical-text.happy {
             font-family: 'Playfair Display', serif;
-            margin-left: 18px;
+            margin-left: 10px;
             margin-top: 52px;
         }
 
@@ -215,7 +215,7 @@
             font-family: 'Playfair Display', serif;
             opacity: 0.76;
             margin-top: -30px;
-            margin-left: 10px;
+            margin-left: 0px;
         }
 
         .letter {
@@ -702,11 +702,20 @@
             cursor: pointer;
             padding: 0;
             color: #5a3045;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
         }
 
         .status-audio-btn:active {
             transform: scale(0.96);
+        }
+
+        .status-audio-btn.playing {
+            background: linear-gradient(135deg, rgba(255,255,255,0.86) 0%, rgba(255,230,181,0.8) 100%);
+            box-shadow: 0 4px 12px rgba(198, 151, 81, 0.22);
+        }
+
+        .status-audio-btn.muted {
+            opacity: 0.8;
         }
 
         .status-audio-btn svg {
@@ -855,12 +864,12 @@
             position: relative;
             margin: 24px auto 10px;
             max-width: 340px;
-            padding: 22px 20px;
+            padding: 22px 18px 22px 26px;
             border-radius: 24px;
             background: linear-gradient(135deg, rgba(255,255,255,0.86) 0%, rgba(255,240,220,0.82) 100%);
             border: 1px solid rgba(212, 165, 116, 0.28);
             box-shadow: 0 14px 30px rgba(76, 46, 31, 0.12);
-            text-align: center;
+            text-align: left;
             overflow: hidden;
         }
 
@@ -1638,23 +1647,49 @@
 
         const musicToggle = document.getElementById('musicToggle');
 
+        const speakerIcon = `
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 18V7l9-2v11"/>
+                <circle cx="6" cy="18" r="2.5"/>
+                <circle cx="15" cy="16" r="2.5"/>
+            </svg>
+        `;
+
+        const mutedIcon = `
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 18V7l9-2v11"/>
+                <circle cx="6" cy="18" r="2.5"/>
+                <circle cx="15" cy="16" r="2.5"/>
+                <path d="M4 4l16 16"/>
+            </svg>
+        `;
+
+        function renderMusicToggleState() {
+            if (!musicToggle || !birthdayAudio) return;
+
+            const isPlaying = !birthdayAudio.paused && !birthdayAudio.muted;
+            const isMuted = birthdayAudio.paused || birthdayAudio.muted;
+
+            musicToggle.classList.toggle('muted', isMuted);
+            musicToggle.classList.toggle('playing', isPlaying);
+            musicToggle.setAttribute('aria-label', isPlaying ? 'Mute birthday music' : 'Play birthday music');
+            musicToggle.innerHTML = isPlaying ? speakerIcon : mutedIcon;
+        }
+
         function startBirthdayAudio() {
             if (!birthdayAudio) return;
             birthdayAudio.muted = false;
             birthdayAudio.currentTime = 0;
             birthdayAudio.play().catch(() => {});
-            if (musicToggle) {
-                musicToggle.classList.add('playing');
-            }
+            renderMusicToggleState();
         }
 
         function stopBirthdayAudio() {
             if (!birthdayAudio) return;
             birthdayAudio.pause();
             birthdayAudio.currentTime = 0;
-            if (musicToggle) {
-                musicToggle.classList.remove('playing');
-            }
+            birthdayAudio.muted = true;
+            renderMusicToggleState();
         }
 
         function updateNepalTime() {
@@ -1677,12 +1712,18 @@
         if (musicToggle) {
             musicToggle.addEventListener('click', function() {
                 if (!birthdayAudio) return;
+
                 if (birthdayAudio.paused) {
                     startBirthdayAudio();
                 } else {
                     stopBirthdayAudio();
                 }
             });
+        }
+
+        if (birthdayAudio) {
+            birthdayAudio.muted = true;
+            renderMusicToggleState();
         }
 
         document.querySelector('.birthday-link').addEventListener('click', function() {

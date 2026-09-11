@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --box-ui-font: 'Orbitron', 'Segoe UI', sans-serif;
+  --box-display-font: 'Bebas Neue', 'Impact', sans-serif;
+  --box-body-font: 'Inter', 'Segoe UI', sans-serif;
+}

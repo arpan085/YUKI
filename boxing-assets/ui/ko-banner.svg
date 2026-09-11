@@ -1,0 +1,6 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="140" viewBox="0 0 500 140">
+  <rect width="500" height="140" rx="26" fill="#111827" opacity="0.88"/>
+  <rect x="10" y="10" width="480" height="120" rx="18" fill="#f5c36c" opacity="0.18"/>
+  <text x="250" y="90" font-family="Orbitron, Arial" font-size="72" font-weight="800" text-anchor="middle" fill="#f9e9cd">KO</text>
+</svg>

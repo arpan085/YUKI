@@ -593,9 +593,12 @@
 
     <script>
         (() => {
-            const PHOTO_SEEDS = [
-                'portrait-1', 'portrait-2', 'portrait-3', 'portrait-4',
-                'travel-1', 'travel-2', 'city-1', 'city-2', 'nature-1', 'nature-2'
+            const VILLAIN_IMAGES = [
+                './villain/1.png',
+                './villain/2.png',
+                './villain/3.png',
+                './villain/4.png',
+                './villain/5.png'
             ];
 
             const game = document.getElementById('game');
@@ -787,10 +790,10 @@
                 target.className = 'target';
 
                 const img = document.createElement('img');
-                const photoSeed = PHOTO_SEEDS[nextPhotoIndex % PHOTO_SEEDS.length];
+                const imagePath = VILLAIN_IMAGES[nextPhotoIndex % VILLAIN_IMAGES.length];
                 nextPhotoIndex += 1;
-                img.src = `https://picsum.photos/seed/${photoSeed}-${Math.floor(Math.random() * 999)}/180/180`;
-                img.alt = 'Target photo';
+                img.src = imagePath;
+                img.alt = 'Villain target';
                 img.loading = 'eager';
                 target.appendChild(img);
 
@@ -874,10 +877,15 @@
 
             function spawnTargets() {
                 if (!state) return;
-                const desired = Math.min(4, 1 + Math.floor(state.timeLeft / 18));
-                while (state.targets.length < desired) {
-                    createTarget();
+
+                const desired = Math.min(3, 1 + Math.floor(state.timeLeft / 24));
+                const spawnChance = Math.max(0.24, 0.52 - (state.timeLeft / 70));
+
+                if (state.targets.length >= desired || Math.random() > spawnChance) {
+                    return;
                 }
+
+                createTarget();
             }
 
             function triggerFlash() {

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Ring Fury</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+
+      #app {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .home-link {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        z-index: 60;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(11, 17, 27, 0.72);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: #f4f1eb;
+        text-decoration: none;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="home-link" href="index.html">Home</a>
+
+    <div id="app">
+      <canvas id="gameCanvas" width="1280" height="720"></canvas>
+
+      <div id="hud" class="hidden">
+        <div class="hud-top">
+          <div class="fighter-panel left">
+            <div class="panel-row">
+              <span id="playerName">ROOKIE</span>
+              <span id="roundLabel">ROUND 1</span>
+            </div>
+            <div class="bar-shell"><div id="playerHealthBar" class="bar health"></div></div>
+            <div class="bar-shell"><div id="playerStaminaBar" class="bar stamina"></div></div>
+          </div>
+
+          <div class="center-hud">
+            <div id="timerLabel">2:59</div>
+            <div id="comboLabel">COMBO x1</div>
+          </div>
+
+          <div class="fighter-panel right">
+            <div class="panel-row">
+              <span id="enemyName">VETERAN</span>
+              <span id="resultLabel">FIGHT</span>
+            </div>
+            <div class="bar-shell"><div id="enemyHealthBar" class="bar enemy-health"></div></div>
+            <div class="bar-shell"><div id="enemyStaminaBar" class="bar enemy-stamina"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="touchControls" class="hidden">
+        <div class="controls-row movement">
+          <button type="button" class="touch-button" data-action="left">?</button>
+          <button type="button" class="touch-button" data-action="right">?</button>
+        </div>
+        <div class="controls-row actions">
+          <button type="button" class="touch-button action" data-action="jab">JAB</button>
+          <button type="button" class="touch-button action" data-action="cross">CROSS</button>
+          <button type="button" class="touch-button action" data-action="hook">HOOK</button>
+          <button type="button" class="touch-button action" data-action="uppercut">UPPER</button>
+        </div>
+        <div class="controls-row extra">
+          <button type="button" class="touch-button action" data-action="block">BLOCK</button>
+          <button type="button" class="touch-button action" data-action="dodge">DODGE</button>
+        </div>
+      </div>
+
+      <div id="menuOverlay" class="screen visible">
+        <div class="screen-panel">
+          <div class="brand">BOXING ARCADE</div>
+          <h1>RING FURY</h1>
+          <div class="menu-buttons">
+            <button class="primary" data-screen="fighterSelect">PLAY</button>
+            <button data-screen="fighterSelect">FIGHTERS</button>
+            <button data-screen="howTo">HOW TO PLAY</button>
+            <button data-screen="settings">SETTINGS</button>
+            <button data-screen="stats">STATS</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="fighterSelectScreen" class="screen hidden">
+        <div class="screen-panel wide">
+          <div class="screen-header">
+            <h2>CHOOSE YOUR FIGHTER</h2>
+            <button class="close-button" data-close="fighterSelect">BACK</button>
+          </div>
+          <div id="fighterGrid" class="fighter-grid"></div>
+        </div>
+      </div>
+
+      <div id="howToScreen" class="screen hidden">
+        <div class="screen-panel">
+          <div class="screen-header">
+            <h2>HOW TO PLAY</h2>
+            <button class="close-button" data-close="howTo">BACK</button>
+          </div>
+          <ul class="help-list">
+            <li>Move with A/D or touch left/right.</li>
+            <li>Use J/K/L/I or on-screen buttons for jab, cross, hook, and uppercut.</li>
+            <li>Hold S to block, and press Space to dodge.</li>
+            <li>Land combos and manage stamina carefully.</li>
+            <li>Knockdowns trigger a countdown and a KO can end the fight.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="settingsScreen" class="screen hidden">
+        <div class="screen-panel">
+          <div class="screen-header">
+            <h2>SETTINGS</h2>
+            <button class="close-button" data-close="settings">BACK</button>
+          </div>
+          <div class="settings-grid">
+            <label>Master Volume <input id="masterVolume" type="range" min="0" max="100" value="80" /></label>
+            <label>SFX Volume <input id="sfxVolume" type="range" min="0" max="100" value="80" /></label>
+            <label>Music Volume <input id="musicVolume" type="range" min="0" max="100" value="50" /></label>
+            <label>Difficulty
+              <select id="difficultySelect">
+                <option value="easy">Easy</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Hard</option>
+              </select>
+            </label>
+            <label><input id="screenShakeToggle" type="checkbox" checked /> Screen Shake</label>
+            <label><input id="particlesToggle" type="checkbox" checked /> Particles</label>
+            <label><input id="performanceToggle" type="checkbox" /> Performance Mode</label>
+          </div>
+        </div>
+      </div>
+
+      <div id="statsScreen" class="screen hidden">
+        <div class="screen-panel">
+          <div class="screen-header">
+            <h2>PROFILE</h2>
+            <button class="close-button" data-close="stats">BACK</button>
+          </div>
+          <div id="statsContent" class="stats-content"></div>
+        </div>
+      </div>
+
+      <div id="pauseScreen" class="screen hidden">
+        <div class="screen-panel small">
+          <h2>PAUSED</h2>
+          <div class="menu-buttons vertical">
+            <button data-action="resume">RESUME</button>
+            <button data-action="restart">RESTART</button>
+            <button data-action="settings">SETTINGS</button>
+            <button data-action="menu">BACK TO MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultScreen" class="screen hidden">
+        <div class="screen-panel">
+          <h2 id="resultTitle">PLAYER WINS</h2>
+          <p id="resultText">You took the decision.</p>
+          <div class="menu-buttons">
+            <button class="primary" data-action="restart">PLAY AGAIN</button>
+            <button data-action="menu">MAIN MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="toast" class="toast hidden"></div>
+    </div>
+
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>
