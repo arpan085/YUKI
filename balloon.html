@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balloon Pop</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #f7efe6 0%, #f0e2d3 100%);
+            color: #2c1d1d;
+            display: flex;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+
+        .game-shell {
+            width: min(760px, 100%);
+            background: rgba(255,255,255,0.42);
+            border: 1px solid rgba(58, 41, 47, 0.08);
+            border-radius: 28px;
+            box-shadow: 0 18px 40px rgba(74, 54, 62, 0.08);
+            padding: 22px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            background: rgba(255,255,255,0.72);
+            color: #2c1d1d;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            font-weight: 600;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .score {
+            background: rgba(255,255,255,0.7);
+            border-radius: 999px;
+            padding: 9px 14px;
+            font-weight: 700;
+            color: #5a3e45;
+        }
+
+        .small-btn {
+            border: none;
+            background: linear-gradient(135deg, #ffbf69 0%, #ff8aaa 100%);
+            color: #2c1d1d;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 10px 16px;
+            cursor: pointer;
+            box-shadow: 0 10px 18px rgba(255, 150, 134, 0.25);
+        }
+
+        .balloon-stage {
+            position: relative;
+            height: 420px;
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(190, 226, 255, 0.3), rgba(255,255,255,0.14));
+            border: 1px dashed rgba(91, 76, 86, 0.18);
+            overflow: hidden;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -30px;
+            width: 52px;
+            height: 64px;
+            border-radius: 50% 50% 45% 45%;
+            border: 2px solid rgba(255,255,255,0.45);
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.2s ease;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .balloon::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 24px;
+            background: rgba(94, 71, 79, 0.6);
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .balloon::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            top: 10px;
+            left: 10px;
+        }
+
+        .balloon:active {
+            transform: scale(0.92);
+        }
+
+        .balloon.pop {
+            opacity: 0;
+            transform: scale(1.4);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(-6deg); }
+            50% { transform: translateY(-12px) rotate(6deg); }
+        }
+
+        @media (max-width: 640px) {
+            .topbar { align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-shell">
+        <div class="topbar">
+            <a class="back-btn" href="games.html" aria-label="Back to games">←</a>
+            <h1>Balloon Pop</h1>
+        </div>
+
+        <div class="status-row">
+            <div class="score" id="balloonScore">Score: 0</div>
+            <button class="small-btn" id="resetBalloons">Pop Again</button>
+        </div>
+
+        <div class="balloon-stage" id="balloonStage"></div>
+    </div>
+
+    <script>
+        const balloonStage = document.getElementById('balloonStage');
+        const balloonScore = document.getElementById('balloonScore');
+        const resetBalloons = document.getElementById('resetBalloons');
+        let balloonCount = 0;
+
+        function createBalloon() {
+            const balloon = document.createElement('button');
+            balloon.type = 'button';
+            balloon.className = 'balloon';
+            balloon.style.left = `${Math.random() * 76 + 4}%`;
+            balloon.style.background = `linear-gradient(180deg, ${['#ff8aaa', '#8cc8ff', '#ffd36c', '#9be6b8', '#c4a4ff'][Math.floor(Math.random() * 5)]} 0%, ${['#ffc0d8', '#bce5ff', '#ffe7a8', '#d9f8df', '#ead9ff'][Math.floor(Math.random() * 5)]} 100%)`;
+            balloon.style.animationDelay = `${Math.random() * 1.5}s`;
+            balloon.addEventListener('click', () => {
+                balloon.classList.add('pop');
+                setTimeout(() => balloon.remove(), 180);
+                balloonCount += 1;
+                balloonScore.textContent = `Score: ${balloonCount}`;
+            });
+            balloonStage.appendChild(balloon);
+        }
+
+        function resetBalloonsGame() {
+            balloonStage.innerHTML = '';
+            balloonCount = 0;
+            balloonScore.textContent = 'Score: 0';
+            for (let i = 0; i < 12; i++) {
+                createBalloon();
+            }
+        }
+
+        resetBalloons.addEventListener('click', resetBalloonsGame);
+        resetBalloonsGame();
+    </script>
+</body>
+</html>

@@ -324,11 +324,7 @@
                     <h2>Memory Match</h2>
                 </div>
                 <p>Flip cards and find the matching pairs before the clock gets you.</p>
-                <div class="memory-grid" id="memoryGrid"></div>
-                <div class="score-row">
-                    <div class="score-badge" id="memoryScore">Moves: 0</div>
-                    <button class="small-btn" id="resetMemory">Restart</button>
-                </div>
+                <a class="play-btn" href="memory.html">Play Game</a>
             </div>
 
             <div class="game-card">
@@ -339,11 +335,7 @@
                     <h2>Balloon Pop</h2>
                 </div>
                 <p>Tap the balloons as quickly as you can and chase the highest score.</p>
-                <div class="balloon-stage" id="balloonStage"></div>
-                <div class="score-row">
-                    <div class="score-badge" id="balloonScore">Score: 0</div>
-                    <button class="small-btn" id="resetBalloons">Pop Again</button>
-                </div>
+                <a class="play-btn" href="balloon.html">Play Game</a>
             </div>
 
             <div class="game-card">
@@ -354,162 +346,9 @@
                     <h2>Tap Rush</h2>
                 </div>
                 <p>Hit the glowing target every time it appears and build your streak.</p>
-                <div class="tap-stage" id="tapStage">
-                    <button id="tapTarget" class="tap-target" aria-label="Tap target">★</button>
-                </div>
-                <div class="score-row">
-                    <div class="score-badge" id="tapScore">Score: 0</div>
-                    <button class="small-btn" id="resetTap">Restart</button>
-                </div>
+                <a class="play-btn" href="tap.html">Play Game</a>
             </div>
         </div>
     </div>
-
-    <script>
-        const symbols = ['✨', '💖', '🎁', '🌸', '☀️', '🎉'];
-
-        const memoryGrid = document.getElementById('memoryGrid');
-        const memoryScore = document.getElementById('memoryScore');
-        const resetMemory = document.getElementById('resetMemory');
-
-        let memoryCards = [];
-        let selectedCards = [];
-        let moves = 0;
-        let lockBoard = false;
-
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function buildMemoryBoard() {
-            const deck = shuffle([...symbols, ...symbols]);
-            memoryGrid.innerHTML = '';
-            memoryCards = []; 
-            selectedCards = [];
-            lockBoard = false;
-            moves = 0;
-            memoryScore.textContent = 'Moves: 0';
-
-            deck.forEach((symbol, index) => {
-                const card = document.createElement('button');
-                card.className = 'memory-card';
-                card.type = 'button';
-                card.dataset.symbol = symbol;
-                card.textContent = '?';
-                card.addEventListener('click', () => flipCard(card));
-                memoryGrid.appendChild(card);
-                memoryCards.push(card);
-            });
-        }
-
-        function flipCard(card) {
-            if (lockBoard || card.classList.contains('flipped') || card.classList.contains('matched')) {
-                return;
-            }
-
-            card.textContent = card.dataset.symbol;
-            card.classList.add('flipped');
-            selectedCards.push(card);
-
-            if (selectedCards.length === 2) {
-                moves++;
-                memoryScore.textContent = `Moves: ${moves}`;
-                lockBoard = true;
-
-                const [first, second] = selectedCards;
-                if (first.dataset.symbol === second.dataset.symbol) {
-                    setTimeout(() => {
-                        first.classList.add('matched');
-                        second.classList.add('matched');
-                        selectedCards = [];
-                        lockBoard = false;
-                    }, 250);
-                } else {
-                    setTimeout(() => {
-                        first.textContent = '?';
-                        second.textContent = '?';
-                        first.classList.remove('flipped');
-                        second.classList.remove('flipped');
-                        selectedCards = [];
-                        lockBoard = false;
-                    }, 700);
-                }
-            }
-        }
-
-        function resetMemoryGame() {
-            buildMemoryBoard();
-        }
-
-        resetMemory.addEventListener('click', resetMemoryGame);
-        buildMemoryBoard();
-
-        const balloonStage = document.getElementById('balloonStage');
-        const balloonScore = document.getElementById('balloonScore');
-        const resetBalloons = document.getElementById('resetBalloons');
-        let balloonCount = 0;
-
-        function createBalloon() {
-            const balloon = document.createElement('button');
-            balloon.type = 'button';
-            balloon.className = 'balloon';
-            balloon.style.left = `${Math.random() * 76 + 4}%`;
-            balloon.style.background = `linear-gradient(180deg, ${['#ff8aaa', '#8cc8ff', '#ffd36c', '#9be6b8', '#c4a4ff'][Math.floor(Math.random() * 5)]} 0%, ${['#ffc0d8', '#bce5ff', '#ffe7a8', '#d9f8df', '#ead9ff'][Math.floor(Math.random() * 5)]} 100%)`;
-            balloon.style.animationDelay = `${Math.random() * 1.5}s`;
-            balloon.addEventListener('click', () => {
-                balloon.classList.add('pop');
-                setTimeout(() => balloon.remove(), 180);
-                balloonCount += 1;
-                balloonScore.textContent = `Score: ${balloonCount}`;
-            });
-            balloonStage.appendChild(balloon);
-        }
-
-        function resetBalloonsGame() {
-            balloonStage.innerHTML = '';
-            balloonCount = 0;
-            balloonScore.textContent = 'Score: 0';
-            for (let i = 0; i < 12; i++) {
-                createBalloon();
-            }
-        }
-
-        resetBalloons.addEventListener('click', resetBalloonsGame);
-        resetBalloonsGame();
-
-        const tapStage = document.getElementById('tapStage');
-        const tapTarget = document.getElementById('tapTarget');
-        const tapScore = document.getElementById('tapScore');
-        const resetTap = document.getElementById('resetTap');
-        let tapCount = 0;
-
-        function moveTarget() {
-            const maxX = tapStage.clientWidth - tapTarget.offsetWidth;
-            const maxY = tapStage.clientHeight - tapTarget.offsetHeight;
-            const x = Math.random() * Math.max(maxX, 1);
-            const y = Math.random() * Math.max(maxY, 1);
-            tapTarget.style.left = `${x}px`;
-            tapTarget.style.top = `${y}px`;
-        }
-
-        function resetTapGame() {
-            tapCount = 0;
-            tapScore.textContent = 'Score: 0';
-            moveTarget();
-        }
-
-        tapTarget.addEventListener('click', () => {
-            tapCount += 1;
-            tapScore.textContent = `Score: ${tapCount}`;
-            moveTarget();
-        });
-
-        resetTap.addEventListener('click', resetTapGame);
-        resetTapGame();
-    </script>
 </body>
 </html>
