@@ -1207,35 +1207,47 @@
         /* Chaos Mode */
         .chaos-container {
             position: relative;
-            height: calc(100vh - 140px);
-            overflow: hidden;
+            max-width: 720px;
+            margin: 0 auto;
+            padding-bottom: 24px;
         }
 
-        .chaos-item {
-            position: absolute;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            font-weight: 600;
-            color: var(--text-dark);
-            animation: chaosFloat 3s ease-in-out infinite;
-            cursor: pointer;
-            user-select: none;
+        .meme-intro {
+            background: linear-gradient(135deg, #fff1f5, #fff8df);
+            border-radius: 22px;
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 5px 20px rgba(80, 45, 65, 0.08);
         }
 
-        .chaos-item:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; background: #FFE4E1; }
-        .chaos-item:nth-child(2) { top: 20%; right: 15%; animation-delay: 0.5s; background: #E6E6FA; }
-        .chaos-item:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 1s; background: #F0E68C; }
-        .chaos-item:nth-child(4) { bottom: 20%; right: 10%; animation-delay: 1.5s; background: #98FB98; }
-        .chaos-item:nth-child(5) { top: 50%; left: 50%; animation-delay: 2s; background: #87CEEB; }
-
-        @keyframes chaosFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(5deg); }
-            50% { transform: translateY(0) rotate(0deg); }
-            75% { transform: translateY(20px) rotate(-5deg); }
+        .meme-intro h2 { margin: 0 0 6px; font-family: 'Playfair Display', serif; color: var(--text-dark); }
+        .meme-intro p { margin: 0; color: var(--text-muted); line-height: 1.5; font-size: 0.9rem; }
+        .meme-toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .meme-control {
+            border: 0; border-radius: 14px; padding: 12px; background: rgba(255,255,255,.88);
+            color: var(--text-dark); text-align: left; box-shadow: 0 3px 12px rgba(80,45,65,.08);
         }
+        .meme-control strong, .meme-control span { display: block; }
+        .meme-control strong { font-size: .8rem; margin-bottom: 3px; }
+        .meme-control span { color: var(--text-muted); font-size: .75rem; }
+        .meme-control input, .meme-control select { width: 100%; border: 0; outline: 0; color: var(--text-dark); background: transparent; font-weight: 700; }
+        .meme-board { position: relative; min-height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 24px; background: #25202e; box-shadow: 0 10px 28px rgba(38,25,42,.2); }
+        .meme-board img { display: block; width: 100%; max-height: 430px; object-fit: contain; transition: filter .25s ease, transform .25s ease; }
+        .meme-board.funny img { filter: saturate(1.45) contrast(1.08) brightness(1.08); }
+        .meme-board.dramatic img { filter: grayscale(.35) contrast(1.5) brightness(.78) sepia(.25); }
+        .meme-board.dreamy img { filter: saturate(.85) brightness(1.12) blur(.3px); }
+        .meme-board.invert img { filter: invert(1) hue-rotate(150deg); }
+        .meme-board.wobble img { transform: rotate(-2deg) scale(1.04); }
+        .meme-caption { position: absolute; left: 12px; right: 12px; bottom: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(25,18,30,.72); color: white; text-align: center; font-weight: 800; font-size: clamp(.9rem,3vw,1.2rem); text-shadow: 0 2px 3px rgba(0,0,0,.45); }
+        .meme-sticker { position: absolute; top: 14px; right: 16px; font-size: 2.6rem; transform: rotate(12deg); filter: drop-shadow(0 2px 2px rgba(0,0,0,.3)); }
+        .meme-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+        .meme-actions button, .meme-file-label { border: 0; border-radius: 999px; padding: 10px 13px; background: linear-gradient(135deg,#ffd18e,#ff9fbd); cursor: pointer; color: #422736; font-weight: 800; font-size: .78rem; }
+        .meme-file-label input { display: none; }
+        .meme-joke { min-height: 50px; display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 16px; color: var(--text-dark); background: rgba(255,255,255,.75); text-align: center; font-weight: 700; line-height: 1.4; }
+        .meme-score { margin-top: 12px; color: var(--text-muted); text-align: center; font-size: .85rem; }
+        .gift-memory { margin-top: 14px; padding: 15px; border-radius: 18px; background: linear-gradient(135deg,#f8edff,#fff5e5); color: var(--text-dark); line-height: 1.5; font-size: .9rem; }
+        .gift-memory strong { display: block; margin-bottom: 5px; }
+        @media (max-width: 420px) { .meme-toolbar { grid-template-columns: 1fr; } }
 
         /* One Year Section */
         .year-container {
@@ -1743,7 +1755,7 @@
             </div>
 
             <div class="app-grid">
-                <div class="app-icon" onclick="openApp('memories')">
+                <div class="app-icon" onclick="window.location.href='memories.html'">
                     <div class="app-symbol">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5A2.5 2.5 0 0 1 7.5 5h9A2.5 2.5 0 0 1 19 7.5v9A2.5 2.5 0 0 1 16.5 19h-9A2.5 2.5 0 0 1 5 16.5v-9Zm2 0h10M9.5 10.5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Zm-2 7.5 2.4-2.2a1.5 1.5 0 0 1 2.1 0l1.2 1.1a1.5 1.5 0 0 0 2.1 0L15.5 14"/></svg>
                     </div>
@@ -1820,10 +1832,19 @@
                 <div class="connection-line"></div>
             </div>
             <div class="memory-card">
+                <div class="memory-date">The Luufy drawing</div>
+                <div class="memory-text">You gifted me your Luufy drawing — the kind of thoughtful surprise that takes hours to make and stays special forever.</div>
+            </div>
+            <div class="memory-card">
+                <div class="memory-date">A chat worth saving</div>
+                <div class="memory-text">“Im just admiring it omgg kasto perfect banako hos k” — your exact kind of support: dramatic, sweet, and impossible not to smile at.</div>
+            </div>
+            <div class="memory-card">
                 <div class="memory-date">Today</div>
-                <div class="memory-text">Happy Birthday, Yudina. Here's to many more years of chaos, laughter, and unforgettable moments.</div>
+                <div class="memory-text">Happy Birthday, Yudina. Here's to many more years of chaos, laughter, inside jokes, and unforgettable moments.</div>
             </div>
         </div>
+        <a class="play-btn" href="memories.html" style="margin-top: 18px;">Add more memories</a>
     </div>
 
     <!-- Camera Roll App -->
@@ -1910,18 +1931,39 @@
     <div class="app-content" id="app-chaos">
         <div class="app-header">
             <div class="back-btn" onclick="closeApp()">←</div>
-            <div class="app-title">Chaos Mode</div>
+            <div class="app-title">Meme Lab</div>
         </div>
         <div class="chaos-container" id="chaosContainer">
-            <div class="chaos-item">Remember that time?</div>
-            <div class="chaos-item">EPIC FAIL</div>
-            <div class="chaos-item">Best Day Ever!</div>
-            <div class="chaos-item">Yudina Magic</div>
-            <div class="chaos-item">Yudina's Face</div>
+            <div class="meme-intro">
+                <h2>Welcome to the meme department 👺</h2>
+                <p>Turn a favorite photo into a tiny inside joke. Pick a filter, add a caption, tap the sticker, and make your own nonsense.</p>
+            </div>
+            <div class="meme-toolbar">
+                <label class="meme-control"><strong>Photo</strong><select id="memePhotoSelect"></select></label>
+                <label class="meme-control"><strong>Filter</strong><select id="memeFilterSelect">
+                    <option value="normal">Original</option><option value="funny">Extra dramatic</option>
+                    <option value="dramatic">Main character</option><option value="dreamy">Soft launch</option><option value="invert">Opposite day</option>
+                </select></label>
+                <label class="meme-control"><strong>Caption</strong><input id="memeCaptionInput" maxlength="70" value="kasto perfect banako hos k"></label>
+                <label class="meme-control"><strong>Sticker</strong><select id="memeStickerSelect">
+                    <option>👺</option><option>🥹</option><option>🫶</option><option>😋</option><option>✨</option><option>💅</option>
+                </select></label>
+            </div>
+            <div class="meme-board" id="memeBoard">
+                <img id="memeImage" alt="Selected meme photo">
+                <div class="meme-sticker" id="memeSticker">👺</div>
+                <div class="meme-caption" id="memeCaption">kasto perfect banako hos k</div>
+            </div>
+            <div class="meme-actions">
+                <label class="meme-file-label">📸 Add meme photos<input id="memeUpload" type="file" accept="image/*" multiple></label>
+                <button type="button" id="randomMemeButton">🎲 Random meme</button>
+                <button type="button" id="effectButton">✨ Effect</button>
+                <button type="button" id="jokeButton">😂 New joke</button>
+            </div>
+            <div class="meme-joke" id="memeJoke">She said “thanksss” three times, so legally this is a premium friendship.</div>
+            <div class="meme-score" id="memeScore">Meme points: 0 · Tap the photo for a surprise</div>
+            <div class="gift-memory"><strong>🎁 Memory unlocked: the Luufy drawing</strong>You made me a Luufy drawing that took hours to create. That is not just a gift — that is legendary bestie behavior.</div>
         </div>
-        <p style="text-align: center; margin-top: 20px; color: var(--text-muted); font-size: 0.9rem;">
-            Shake your phone for more chaos!
-        </p>
     </div>
 
     <!-- Secret App -->
@@ -2103,6 +2145,120 @@
             }
         }
 
+        // Meme Lab
+        const memePhotoOptions = [
+            { name: 'Birthday photo', src: 'assets/1.jpeg' },
+            { name: 'Meme face 1', src: 'villain/1.png' },
+            { name: 'Meme face 2', src: 'villain/2.png' },
+            { name: 'Meme face 3', src: 'villain/3.png' },
+            { name: 'Meme face 4', src: 'villain/4.png' },
+            { name: 'Meme face 5', src: 'villain/5.png' },
+            { name: 'Heroine energy', src: 'villain/heroine.png' }
+        ];
+        const memeJokes = [
+            'She said “thanksss” three times, so legally this is a premium friendship.',
+            'POV: you made one tiny edit and accidentally became a professional designer.',
+            'When the gift took hours but the reaction was worth every minute.',
+            'A normal photo? Never heard of her. Make it a meme.',
+            'Bestie status: sending three heart emojis and zero explanations.',
+            'This face has been promoted to CEO of being iconic.'
+        ];
+        const memeEffects = ['normal', 'funny', 'dramatic', 'dreamy', 'invert'];
+        let memePoints = 0;
+        let memeUploads = [];
+        let memeEffectIndex = 0;
+
+        function initMemeLab() {
+            const select = document.getElementById('memePhotoSelect');
+            const image = document.getElementById('memeImage');
+            const board = document.getElementById('memeBoard');
+            const captionInput = document.getElementById('memeCaptionInput');
+            const caption = document.getElementById('memeCaption');
+            const stickerSelect = document.getElementById('memeStickerSelect');
+            const sticker = document.getElementById('memeSticker');
+            const filterSelect = document.getElementById('memeFilterSelect');
+            const joke = document.getElementById('memeJoke');
+            const score = document.getElementById('memeScore');
+            if (!select || !image || !board) return;
+
+            function allPhotos() {
+                return [...memePhotoOptions, ...memeUploads];
+            }
+            function renderPhotos() {
+                const current = select.value;
+                select.innerHTML = '';
+                allPhotos().forEach((photo, index) => {
+                    const option = document.createElement('option');
+                    option.value = String(index);
+                    option.textContent = photo.name;
+                    select.appendChild(option);
+                });
+                select.value = allPhotos().some((_, index) => String(index) === current) ? current : '0';
+                image.src = allPhotos()[Number(select.value)].src;
+            }
+            function updateScore(amount) {
+                memePoints += amount;
+                score.textContent = `Meme points: ${memePoints} · Tap the photo for a surprise`;
+            }
+            select.addEventListener('change', () => {
+                image.src = allPhotos()[Number(select.value)].src;
+                updateScore(1);
+            });
+            filterSelect.addEventListener('change', () => {
+                board.className = `meme-board ${filterSelect.value === 'normal' ? '' : filterSelect.value}`;
+                updateScore(2);
+            });
+            captionInput.addEventListener('input', () => {
+                caption.textContent = captionInput.value || '...';
+            });
+            stickerSelect.addEventListener('change', () => {
+                sticker.textContent = stickerSelect.value;
+                updateScore(1);
+            });
+            document.getElementById('randomMemeButton').addEventListener('click', () => {
+                select.value = String(Math.floor(Math.random() * allPhotos().length));
+                image.src = allPhotos()[Number(select.value)].src;
+                captionInput.value = memeJokes[Math.floor(Math.random() * memeJokes.length)];
+                caption.textContent = captionInput.value;
+                stickerSelect.selectedIndex = Math.floor(Math.random() * stickerSelect.options.length);
+                sticker.textContent = stickerSelect.value;
+                updateScore(5);
+            });
+            document.getElementById('effectButton').addEventListener('click', () => {
+                memeEffectIndex = (memeEffectIndex + 1) % memeEffects.length;
+                filterSelect.value = memeEffects[memeEffectIndex];
+                filterSelect.dispatchEvent(new Event('change'));
+                board.classList.add('wobble');
+                setTimeout(() => board.classList.remove('wobble'), 450);
+            });
+            document.getElementById('jokeButton').addEventListener('click', () => {
+                joke.textContent = memeJokes[Math.floor(Math.random() * memeJokes.length)];
+                updateScore(3);
+            });
+            image.addEventListener('click', () => {
+                joke.textContent = 'BONK! +10 points for appreciating the meme.';
+                updateScore(10);
+                board.classList.add('wobble');
+                setTimeout(() => board.classList.remove('wobble'), 450);
+            });
+            document.getElementById('memeUpload').addEventListener('change', (event) => {
+                [...event.target.files].filter((file) => file.type.startsWith('image/')).forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        memeUploads.push({ name: file.name, src: reader.result });
+                        renderPhotos();
+                        select.value = String(allPhotos().length - 1);
+                        image.src = allPhotos()[Number(select.value)].src;
+                        updateScore(5);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+            renderPhotos();
+        }
+
+        initMemeLab();
+
         // Phone Shake Detection for Chaos Mode
         let shakeTimeout;
         window.addEventListener('devicemotion', (e) => {
@@ -2127,18 +2283,10 @@
             if (chaosContainer) {
                 chaosContainer.classList.add('shake');
                 setTimeout(() => chaosContainer.classList.remove('shake'), 500);
-                
-                // Add random chaos item
-                const items = ['', 'WOW!', 'NO WAY!', 'LEGEND!', 'ICONIC'];
-                const newItem = document.createElement('div');
-                newItem.className = 'chaos-item';
-                newItem.textContent = items[Math.floor(Math.random() * items.length)];
-                newItem.style.left = Math.random() * 80 + 10 + '%';
-                newItem.style.top = Math.random() * 60 + 20 + '%';
-                newItem.style.animationDelay = Math.random() * 2 + 's';
-                chaosContainer.appendChild(newItem);
-                
-                setTimeout(() => newItem.remove(), 3000);
+                const effectButton = document.getElementById('effectButton');
+                if (effectButton) effectButton.click();
+                const jokeButton = document.getElementById('jokeButton');
+                if (jokeButton) jokeButton.click();
             }
         }
 
