@@ -53,6 +53,17 @@
                 linear-gradient(180deg, rgba(16, 24, 36, 0.2), rgba(8, 12, 18, 0.8));
         }
 
+        #game.shake {
+            animation: gameShake 0.12s ease-in-out 2;
+        }
+
+        @keyframes gameShake {
+            0%, 100% { transform: translate3d(0,0,0); }
+            25% { transform: translate3d(-2px, 1px, 0); }
+            50% { transform: translate3d(2px, -1px, 0); }
+            75% { transform: translate3d(-1px, 1px, 0); }
+        }
+
         #targetsLayer,
         #effectsLayer {
             position: absolute;
@@ -69,13 +80,45 @@
             padding: calc(12px + env(safe-area-inset-top)) 12px 8px;
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             z-index: 30;
+            pointer-events: none;
+            flex-wrap: wrap;
+        }
+
+        #missionBanner {
+            position: absolute;
+            top: calc(78px + env(safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: min(80vw, 300px);
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: rgba(17, 27, 38, 0.76);
+            border: 1px solid rgba(236, 176, 90, 0.4);
+            color: #ffdca5;
+            font-size: 10px;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            font-weight: 900;
+            text-align: center;
+            box-shadow: 0 12px 22px rgba(0,0,0,0.22);
+            z-index: 20;
             pointer-events: none;
         }
 
+        #missionBanner.pulse {
+            animation: missionPulse 0.45s ease-out;
+        }
+
+        @keyframes missionPulse {
+            0% { transform: translateX(-50%) scale(0.96); opacity: 0.5; }
+            55% { transform: translateX(-50%) scale(1.04); opacity: 1; }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+
         .hud-pill {
-            min-width: 92px;
+            min-width: 84px;
             background: rgba(17, 27, 38, 0.72);
             border: 1px solid rgba(124, 167, 240, 0.25);
             backdrop-filter: blur(8px);
@@ -104,7 +147,9 @@
             color: #ff7d7d;
         }
 
-        #reloadBtn {
+        #homeBtn,
+        #reloadBtn,
+        #specialBtn {
             position: absolute;
             left: 16px;
             bottom: calc(18px + env(safe-area-invert-bottom, 0px));
@@ -122,12 +167,42 @@
             transition: opacity 0.25s ease, transform 0.15s ease;
         }
 
-        #reloadBtn:active {
+        #homeBtn {
+            left: auto;
+            right: 16px;
+            top: calc(16px + env(safe-area-inset-top));
+            bottom: auto;
+            z-index: 35;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 74px;
+            background: rgba(10, 17, 26, 0.72);
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+
+        #specialBtn {
+            left: auto;
+            right: 16px;
+            background: linear-gradient(135deg, rgba(112, 245, 214, 0.18), rgba(91, 154, 255, 0.2));
+            border-color: rgba(116, 217, 255, 0.45);
+            color: #dffcff;
+        }
+
+        #reloadBtn:active,
+        #specialBtn:active {
             transform: scale(0.96);
         }
 
         #reloadBtn.busy {
             opacity: 0.5;
+        }
+
+        #specialBtn.ready {
+            background: linear-gradient(135deg, rgba(255, 183, 84, 0.28), rgba(255, 116, 163, 0.26));
+            border-color: rgba(255, 214, 133, 0.7);
+            box-shadow: 0 10px 25px rgba(255, 171, 97, 0.26);
         }
 
         #gun {
@@ -182,6 +257,20 @@
             z-index: 18;
         }
 
+        #focusOverlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 17;
+            opacity: 0;
+            transition: opacity 0.18s ease;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.12) 0%, rgba(27,38,53,0.1) 34%, rgba(5,10,17,0.58) 72%, rgba(5,10,17,0.86) 100%);
+        }
+
+        #focusOverlay.visible {
+            opacity: 1;
+        }
+
         #flash.on {
             animation: flashAnim 0.11s ease-out;
         }
@@ -201,6 +290,17 @@
             z-index: 4;
             pointer-events: none;
             will-change: transform, opacity;
+            transition: box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+
+        .target.rare {
+            border-color: rgba(255, 214, 90, 0.95);
+            box-shadow: 0 0 0 3px rgba(255,209,102,0.18), 0 20px 30px rgba(255, 179, 71, 0.18);
+        }
+
+        .target.boss {
+            border-color: rgba(255, 111, 163, 0.95);
+            box-shadow: 0 0 0 4px rgba(255, 116, 185, 0.2), 0 24px 38px rgba(255, 73, 154, 0.18);
         }
 
         .target img {
@@ -260,20 +360,21 @@
 
         .impact {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            border: 2px solid rgba(255,237,175,0.8);
-            box-shadow: 0 0 16px rgba(255,205,88,0.6);
-            transform: translate(-50%, -50%) scale(0.5);
-            animation: impact 0.3s ease-out forwards;
+            border: 1.5px solid rgba(255,237,175,0.9);
+            box-shadow: 0 0 8px rgba(255,205,88,0.52);
+            background: rgba(255, 240, 180, 0.08);
+            transform: translate(-50%, -50%) scale(0.4);
+            animation: impact 0.24s ease-out forwards;
             pointer-events: none;
             z-index: 12;
         }
 
         @keyframes impact {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.4); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
         }
 
         .float-score {
@@ -293,13 +394,32 @@
             100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
         }
 
+        .combo-banner {
+            position: absolute;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #ffdf8c;
+            text-shadow: 0 0 12px rgba(255, 203, 91, 0.8);
+            transform: translate(-50%, -50%);
+            animation: comboPop 0.7s ease-out forwards;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        @keyframes comboPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            20% { opacity: 1; transform: translate(-50%, -60%) scale(1.1); }
+            100% { opacity: 0; transform: translate(-50%, -100%) scale(1); }
+        }
+
         #crosshair {
             position: absolute;
-            width: 26px;
-            height: 26px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.82);
-            box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+            border: 1.5px solid rgba(255,255,255,0.7);
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.16);
             transform: translate(-50%, -50%);
             pointer-events: none;
             z-index: 16;
@@ -311,23 +431,8 @@
         #crosshair::after {
             content: "";
             position: absolute;
-            background: rgba(255,255,255,0.82);
-        }
-
-        #crosshair::before {
-            width: 2px;
-            height: 32px;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        #crosshair::after {
-            width: 32px;
-            height: 2px;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.2);
+            display: none;
         }
 
         #crosshair.visible {
@@ -349,10 +454,171 @@
             text-align: center;
         }
 
+        #gameOverOverlay .panel {
+            position: relative;
+            overflow: hidden;
+            animation: finishPanel 0.55s ease-out;
+        }
+
+        @keyframes finishPanel {
+            0% { opacity: 0; transform: scale(0.94) translateY(18px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
         .overlay.hidden {
             opacity: 0;
             pointer-events: none;
             display: none;
+        }
+
+        #bossIntroOverlay {
+            background: radial-gradient(circle at center, rgba(78, 20, 56, 0.78), rgba(9, 12, 18, 0.96));
+            z-index: 45;
+        }
+
+        .boss-panel {
+            width: min(88vw, 520px);
+            border-color: rgba(255, 132, 181, 0.42);
+            background: linear-gradient(180deg, rgba(36, 18, 32, 0.82), rgba(16, 12, 22, 0.88));
+            box-shadow: 0 24px 52px rgba(255, 88, 151, 0.2), 0 0 80px rgba(255, 120, 166, 0.12);
+            transform: scale(0.92);
+            animation: bossPanelIn 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+        }
+
+        @keyframes bossPanelIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(18px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .boss-tag {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 7px 12px;
+            background: rgba(255, 126, 163, 0.14);
+            border: 1px solid rgba(255, 188, 214, 0.38);
+            color: #ffd1e4;
+            letter-spacing: 2px;
+            font-size: 9px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        #killCam {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 55;
+            opacity: 0;
+            background: rgba(8, 10, 16, 0.12);
+        }
+
+        #killCam.show {
+            animation: killCamZoom 0.72s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+        }
+
+        #killCamFrame {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: min(18vw, 120px);
+            height: min(18vw, 120px);
+            aspect-ratio: 1;
+            transform: translate(-50%, -50%) scale(0.5);
+            border: 1.5px solid rgba(255, 230, 166, 0.68);
+            background: radial-gradient(circle at center, rgba(255, 208, 124, 0.08), rgba(15, 18, 26, 0.7));
+            border-radius: 50%;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 8px 20px rgba(255, 165, 98, 0.05);
+            overflow: hidden;
+        }
+
+        #killCamFrame::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.14), transparent 18%, transparent 82%, rgba(255,255,255,0.12));
+        }
+
+        #killCamText {
+            position: absolute;
+            left: 50%;
+            top: 58%;
+            transform: translateX(-50%);
+            font-size: clamp(0.58rem, 1.6vw, 0.9rem);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #fff2d6;
+            text-shadow: 0 0 8px rgba(255, 195, 84, 0.7);
+            font-weight: 900;
+        }
+
+        @keyframes killCamZoom {
+            0% {
+                opacity: 0;
+                background: rgba(8, 10, 16, 0.1);
+            }
+            12% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+                background: rgba(12, 10, 16, 0.2);
+            }
+            100% {
+                opacity: 0;
+                background: rgba(8, 10, 16, 0.3);
+            }
+        }
+
+        #killCam.show #killCamFrame {
+            animation: killCamFrameZoom 0.72s cubic-bezier(0.18, 0.88, 0.3, 1) forwards;
+        }
+
+        @keyframes killCamFrameZoom {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.15; }
+            25% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(1.12); opacity: 0; }
+        }
+
+        #koFlash {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            left: 50%;
+            top: 50%;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.12) 0%, rgba(255, 218, 124, 0.12) 18%, rgba(255, 122, 158, 0.08) 38%, rgba(8, 12, 16, 0) 72%);
+        }
+
+        #koFlash.show {
+            animation: koFlash 0.24s ease-out;
+        }
+
+        @keyframes koFlash {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            25% { opacity: 0.28; transform: translate(-50%, -50%) scale(0.9); }
+            60% { opacity: 0.14; transform: translate(-50%, -50%) scale(1.1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        #game.slowmo {
+            filter: saturate(1.08) brightness(1.03);
+            transform: scale(1.006);
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        #game.slowmo::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255, 190, 92, 0.06), rgba(255, 133, 164, 0.1) 26%, rgba(7, 12, 18, 0.06) 68%, rgba(3, 6, 12, 0.08) 100%);
+            opacity: 0.65;
+            pointer-events: none;
+            z-index: 8;
         }
 
         .panel {
@@ -477,14 +743,31 @@
                 min-width: 78px;
             }
 
-            #reloadBtn {
+            #homeBtn,
+            #reloadBtn,
+            #specialBtn {
                 left: 12px;
                 bottom: calc(14px + env(safe-area-inset-bottom));
+                padding: 11px 12px;
+            }
+
+            #homeBtn {
+                top: calc(12px + env(safe-area-inset-top));
+                right: 12px;
+                left: auto;
+                bottom: auto;
+            }
+
+            #specialBtn {
+                left: auto;
+                right: 12px;
             }
         }
     </style>
 </head>
 <body>
+    <a id="homeBtn" href="games.html" aria-label="Back to games">HOME</a>
+
     <div id="game">
         <div id="hud">
             <div class="hud-pill">
@@ -499,12 +782,27 @@
                 <span class="label">AMMO</span>
                 <span class="value" id="ammoValue">8</span>
             </div>
+            <div class="hud-pill">
+                <span class="label">COMBO</span>
+                <span class="value" id="comboValue">x1</span>
+            </div>
+            <div class="hud-pill">
+                <span class="label">POWER</span>
+                <span class="value" id="powerValue">0%</span>
+            </div>
+            <div class="hud-pill">
+                <span class="label">LEVEL</span>
+                <span class="value" id="levelValue">1</span>
+            </div>
         </div>
 
         <button id="reloadBtn" type="button">RELOAD</button>
+        <button id="specialBtn" type="button">SPECIAL</button>
 
+        <div id="missionBanner">Mission: Lock on</div>
         <div id="targetsLayer"></div>
         <div id="effectsLayer"></div>
+        <div id="focusOverlay"></div>
 
         <div id="crosshair"></div>
 
@@ -547,15 +845,41 @@
         </div>
     </div>
 
+    <div id="bossIntroOverlay" class="overlay hidden">
+        <div class="panel boss-panel">
+            <div class="boss-tag">Boss Signal</div>
+            <h2>Villain incoming</h2>
+            <p class="subtitle">The lens locks in. One clean burst now decides the round.</p>
+        </div>
+    </div>
+
+    <div id="killCam" class="hidden">
+        <div id="killCamFrame"></div>
+        <div id="killCamText">KO</div>
+    </div>
+
+    <div id="koFlash" class="hidden"></div>
+
     <div id="menuOverlay" class="overlay">
         <div class="panel">
             <h1>Photo Shooter</h1>
-            <p class="subtitle">Tap targets, reload fast, and beat the clock.</p>
+            <p class="subtitle">Tap, reload, and keep the streak alive before the clock runs out.</p>
 
             <div class="time-grid">
                 <button class="time-btn active" data-seconds="15" type="button">15s</button>
                 <button class="time-btn" data-seconds="30" type="button">30s</button>
                 <button class="time-btn" data-seconds="60" type="button">1 min</button>
+            </div>
+
+            <div class="stats" style="margin-top: 18px; margin-bottom: 12px;">
+                <div class="stat-box">
+                    <span class="mini-label">Aim</span>
+                    <span class="mini-value">Tap</span>
+                </div>
+                <div class="stat-box">
+                    <span class="mini-label">Bonus</span>
+                    <span class="mini-value">Combo</span>
+                </div>
             </div>
 
             <button id="startBtn" class="primary-btn" type="button">Start Game</button>
@@ -611,6 +935,9 @@
             const crosshair = document.getElementById('crosshair');
             const menuOverlay = document.getElementById('menuOverlay');
             const gameOverOverlay = document.getElementById('gameOverOverlay');
+            const bossIntroOverlay = document.getElementById('bossIntroOverlay');
+            const killCam = document.getElementById('killCam');
+            const koFlash = document.getElementById('koFlash');
             const startBtn = document.getElementById('startBtn');
             const retryBtn = document.getElementById('retryBtn');
             const menuBtn = document.getElementById('menuBtn');
@@ -618,6 +945,11 @@
             const timeValue = document.getElementById('timeValue');
             const ammoValue = document.getElementById('ammoValue');
             const scoreValue = document.getElementById('scoreValue');
+            const comboValue = document.getElementById('comboValue');
+            const powerValue = document.getElementById('powerValue');
+            const levelValue = document.getElementById('levelValue');
+            const specialBtn = document.getElementById('specialBtn');
+            const focusOverlay = document.getElementById('focusOverlay');
 
             const finalScore = document.getElementById('finalScore');
             const finalAccuracy = document.getElementById('finalAccuracy');
@@ -627,6 +959,7 @@
             const timeButtons = [...document.querySelectorAll('.time-btn')];
             const MAG_SIZE = 8;
             const RELOAD_DELAY = 1.05;
+            const MAX_TARGETS = 8;
 
             let selectedSeconds = 15;
             let state = null;
@@ -635,12 +968,36 @@
             let masterGain = null;
             let nextPhotoIndex = 0;
 
+            function addScreenShake() {
+                game.classList.remove('shake');
+                void game.offsetWidth;
+                game.classList.add('shake');
+            }
+
+            function setFocusMode(enabled) {
+                if (!focusOverlay) return;
+                if (enabled) {
+                    focusOverlay.classList.add('visible');
+                } else {
+                    focusOverlay.classList.remove('visible');
+                }
+            }
+
             function getBestScore() {
                 return Number(localStorage.getItem('photoShooterBest') || 0);
             }
 
             function setBestScore(score) {
                 localStorage.setItem('photoShooterBest', String(score));
+            }
+
+            function updateMissionText(text) {
+                const missionBanner = document.getElementById('missionBanner');
+                if (!missionBanner) return;
+                missionBanner.textContent = text;
+                missionBanner.classList.remove('pulse');
+                void missionBanner.offsetWidth;
+                missionBanner.classList.add('pulse');
             }
 
             function ensureAudio() {
@@ -738,6 +1095,80 @@
                 osc.stop(t + 0.22);
             }
 
+            function playBossIntroSound() {
+                const ctx = ensureAudio();
+                if (!ctx) return;
+                const t = ctx.currentTime;
+
+                const bass = ctx.createOscillator();
+                bass.type = 'sawtooth';
+                bass.frequency.setValueAtTime(170, t);
+                bass.frequency.exponentialRampToValueAtTime(92, t + 0.6);
+
+                const bassGain = ctx.createGain();
+                bassGain.gain.setValueAtTime(0.12, t);
+                bassGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.72);
+
+                bass.connect(bassGain);
+                bassGain.connect(masterGain);
+                bass.start(t);
+                bass.stop(t + 0.72);
+
+                const lead = ctx.createOscillator();
+                lead.type = 'triangle';
+                lead.frequency.setValueAtTime(420, t + 0.08);
+                lead.frequency.exponentialRampToValueAtTime(220, t + 0.48);
+
+                const leadGain = ctx.createGain();
+                leadGain.gain.setValueAtTime(0.09, t + 0.08);
+                leadGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.52);
+
+                lead.connect(leadGain);
+                leadGain.connect(masterGain);
+                lead.start(t + 0.08);
+                lead.stop(t + 0.52);
+
+                setTimeout(() => playNoiseBurst(0.48, 1400, 260, 0.2, false), 30);
+                setTimeout(() => playNoiseBurst(0.35, 1100, 180, 0.12, true), 110);
+            }
+
+            function playKoSound() {
+                const ctx = ensureAudio();
+                if (!ctx) return;
+                const t = ctx.currentTime;
+
+                const bass = ctx.createOscillator();
+                bass.type = 'square';
+                bass.frequency.setValueAtTime(220, t);
+                bass.frequency.exponentialRampToValueAtTime(64, t + 0.8);
+
+                const bassGain = ctx.createGain();
+                bassGain.gain.setValueAtTime(0.18, t);
+                bassGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.8);
+
+                bass.connect(bassGain);
+                bassGain.connect(masterGain);
+                bass.start(t);
+                bass.stop(t + 0.8);
+
+                const chord = ctx.createOscillator();
+                chord.type = 'triangle';
+                chord.frequency.setValueAtTime(180, t + 0.04);
+                chord.frequency.exponentialRampToValueAtTime(120, t + 0.7);
+
+                const chordGain = ctx.createGain();
+                chordGain.gain.setValueAtTime(0.07, t + 0.04);
+                chordGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+
+                chord.connect(chordGain);
+                chordGain.connect(masterGain);
+                chord.start(t + 0.04);
+                chord.stop(t + 0.7);
+
+                setTimeout(() => playNoiseBurst(0.7, 2500, 460, 0.25, true), 20);
+                setTimeout(() => playNoiseBurst(0.8, 1800, 300, 0.18, false), 110);
+            }
+
             function playReloadSound() {
                 const ctx = ensureAudio();
                 if (!ctx) return;
@@ -763,6 +1194,8 @@
                 crosshair.style.left = `${x}px`;
                 crosshair.style.top = `${y}px`;
                 crosshair.classList.add('visible');
+                crosshair.style.width = `${26 + Math.min(10, Math.max(0, state?.combo || 0) * 1.2)}px`;
+                crosshair.style.height = `${26 + Math.min(10, Math.max(0, state?.combo || 0) * 1.2)}px`;
             }
 
             function hideCrosshair() {
@@ -784,23 +1217,48 @@
                 timeValue.classList.toggle('low', timeLabel <= 5);
                 ammoValue.textContent = `${state.ammo}/${MAG_SIZE}`;
                 scoreValue.textContent = String(state.score);
+                comboValue.textContent = `x${Math.max(1, state.combo)}`;
+                powerValue.textContent = `${Math.min(100, Math.max(0, state.specialCharge))}%`;
+                levelValue.textContent = String(state.level);
+
+                if (specialBtn) {
+                    specialBtn.classList.toggle('ready', state.specialCharge >= 100);
+                    specialBtn.textContent = state.specialCharge >= 100 ? 'SPECIAL READY' : 'SPECIAL';
+                }
             }
 
-            function createTarget() {
+            function createComboBanner(x, y, text) {
+                const banner = document.createElement('div');
+                banner.className = 'combo-banner';
+                banner.textContent = text;
+                banner.style.left = `${x}px`;
+                banner.style.top = `${y}px`;
+                effectsLayer.appendChild(banner);
+                setTimeout(() => banner.remove(), 700);
+            }
+
+            function createTarget(overrideVariant = null) {
+                const variantRoll = Math.random();
+                let variant = overrideVariant || 'normal';
+                if (!overrideVariant) {
+                    if (variantRoll < 0.12) variant = 'boss';
+                    else if (variantRoll < 0.42) variant = 'rare';
+                }
+
                 const target = document.createElement('div');
-                target.className = 'target';
+                target.className = `target ${variant}`;
 
                 const img = document.createElement('img');
-                const imagePath = Math.random() < 0.18
-                    ? RARE_VILLAIN_IMAGE
-                    : VILLAIN_IMAGES[nextPhotoIndex % VILLAIN_IMAGES.length];
+                const imagePath = variant === 'boss' ? RARE_VILLAIN_IMAGE : VILLAIN_IMAGES[nextPhotoIndex % VILLAIN_IMAGES.length];
                 nextPhotoIndex += 1;
                 img.src = imagePath;
                 img.alt = 'Villain target';
                 img.loading = 'eager';
                 target.appendChild(img);
 
-                const baseSize = 58 + Math.random() * 26;
+                const sizeBase = variant === 'boss' ? 104 : variant === 'rare' ? 82 : 60;
+                const sizeVariance = variant === 'boss' ? 18 : variant === 'rare' ? 20 : 26;
+                const baseSize = sizeBase + Math.random() * sizeVariance;
                 const maxX = game.clientWidth - baseSize - 24;
                 const maxY = game.clientHeight - baseSize - 110;
 
@@ -812,8 +1270,8 @@
                 target.style.left = `${x}px`;
                 target.style.top = `${y}px`;
 
-                const driftX = (Math.random() * 2 - 1) * 24;
-                const driftY = (Math.random() * 2 - 1) * 20;
+                const driftX = (Math.random() * 2 - 1) * (variant === 'boss' ? 28 : variant === 'rare' ? 22 : 18);
+                const driftY = (Math.random() * 2 - 1) * (variant === 'boss' ? 30 : variant === 'rare' ? 21 : 17);
 
                 const targetData = {
                     element: target,
@@ -822,9 +1280,11 @@
                     size: baseSize,
                     vx: driftX,
                     vy: driftY,
-                    life: 2.6 + Math.random() * 1.6,
+                    life: variant === 'boss' ? 3.6 : variant === 'rare' ? 3.0 : 2.5,
                     age: 0,
                     alive: true,
+                    variant,
+                    phase: Math.random() * Math.PI * 2,
                 };
 
                 targetsLayer.appendChild(target);
@@ -855,8 +1315,11 @@
                     }
 
                     item.age += dt;
-                    item.x += item.vx * dt;
-                    item.y += item.vy * dt;
+                    const speedBoost = 1 + state.level * 0.16;
+                    const swayX = Math.sin(item.age * 2.4 + item.phase) * (item.variant === 'boss' ? 18 : 10);
+                    const swayY = Math.cos(item.age * 2.1 + item.phase) * (item.variant === 'boss' ? 20 : 12);
+                    item.x += (item.vx + swayX * 0.25) * dt * speedBoost;
+                    item.y += (item.vy + swayY * 0.2) * dt * speedBoost;
 
                     if (item.x < 10 || item.x > width - item.size - 10) {
                         item.vx *= -1;
@@ -870,6 +1333,7 @@
 
                     item.element.style.left = `${item.x}px`;
                     item.element.style.top = `${item.y}px`;
+                    item.element.style.transform = `rotate(${Math.sin(item.age * 8 + item.phase) * (item.variant === 'boss' ? 18 : 10)}deg)`;
 
                     if (item.age >= item.life) {
                         removeTarget(item, false);
@@ -881,14 +1345,25 @@
             function spawnTargets() {
                 if (!state) return;
 
-                const desired = Math.min(3, 1 + Math.floor(state.timeLeft / 24));
-                const spawnChance = Math.max(0.24, 0.52 - (state.timeLeft / 70));
+                state.level = Math.max(1, Math.floor((selectedSeconds - state.timeLeft) / 5) + 1);
+                const desired = Math.min(MAX_TARGETS, 2 + Math.floor(state.level / 2));
+                const spawnChance = Math.max(0.3, 0.85 - state.level * 0.05);
 
                 if (state.targets.length >= desired || Math.random() > spawnChance) {
                     return;
                 }
 
-                createTarget();
+                const bossWaveWindow = state.level > 1 && Math.random() < 0.22 + state.level * 0.02;
+                const spawnCount = bossWaveWindow ? 1 : Math.min(2, 1 + Math.floor(Math.random() * 2));
+
+                for (let i = 0; i < spawnCount; i++) {
+                    const variant = bossWaveWindow && i === 0 ? 'boss' : null;
+                    createTarget(variant);
+                }
+
+                if (state.level > 1 && state.targets.length < desired && Math.random() < 0.25) {
+                    createTarget('rare');
+                }
             }
 
             function triggerFlash() {
@@ -973,6 +1448,56 @@
                 }, RELOAD_DELAY * 1000);
             }
 
+            function getPrecisionScore(hitTarget, x, y) {
+                const dx = x - (hitTarget.x + hitTarget.size / 2);
+                const dy = y - (hitTarget.y + hitTarget.size / 2);
+                const centerDistance = Math.hypot(dx, dy);
+                const normalized = centerDistance / (hitTarget.size / 2);
+
+                let precision = 1;
+                if (normalized < 0.18) {
+                    precision = 2.3;
+                } else if (normalized < 0.42) {
+                    precision = 1.8;
+                } else if (normalized < 0.72) {
+                    precision = 1.25;
+                }
+
+                return { normalized, precision };
+            }
+
+            function fireSpecialBurst() {
+                if (!state || !state.running || state.specialCharge < 100) return;
+
+                const centerX = game.clientWidth / 2;
+                const centerY = game.clientHeight / 2;
+                const blastTargets = [...state.targets].filter(item => {
+                    const cx = item.x + item.size / 2;
+                    const cy = item.y + item.size / 2;
+                    return Math.hypot(cx - centerX, cy - centerY) < 230;
+                });
+
+                state.specialCharge = 0;
+                updateHud();
+                playHitSound(true);
+                addScreenShake();
+                setFocusMode(true);
+                setTimeout(() => setFocusMode(false), 260);
+
+                blastTargets.forEach((target) => {
+                    const award = target.variant === 'boss' ? 260 : target.variant === 'rare' ? 180 : 90;
+                    state.score += award;
+                    addFloatScore(target.x + target.size / 2, target.y + target.size / 2, award);
+                    createComboBanner(target.x + target.size / 2, target.y + target.size / 2, 'ULTRA');
+                    removeTarget(target, true);
+                });
+
+                state.targets = state.targets.filter(item => !blastTargets.includes(item));
+                state.combo = Math.max(1, state.combo + 2);
+                state.comboTimer = 2.2;
+                updateHud();
+            }
+
             function shoot(x, y) {
                 if (!state || !state.running || state.reloading) return;
 
@@ -992,28 +1517,44 @@
 
                 const hitTarget = findClosestTarget(x, y);
                 if (hitTarget) {
-                    const dx = x - (hitTarget.x + hitTarget.size / 2);
-                    const dy = y - (hitTarget.y + hitTarget.size / 2);
-                    const centerDistance = Math.hypot(dx, dy);
-                    const normalized = centerDistance / (hitTarget.size / 2);
-
-                    let points = 15;
+                    const { normalized, precision } = getPrecisionScore(hitTarget, x, y);
+                    let basePoints = hitTarget.variant === 'boss' ? 140 : hitTarget.variant === 'rare' ? 80 : 28;
+                    const streakBonus = state.combo > 0 ? state.combo * 8 : 0;
+                    const comboMultiplier = 1 + Math.min(4, Math.max(0, state.combo)) * 0.24;
                     let bullseye = false;
 
-                    if (normalized < 0.22) {
-                        points = 100;
+                    if (normalized < 0.18) {
+                        basePoints += 55;
                         bullseye = true;
-                    } else if (normalized < 0.5) {
-                        points = 60;
-                    } else if (normalized < 0.82) {
-                        points = 30;
+                    } else if (normalized < 0.42) {
+                        basePoints += 20;
+                    } else if (normalized < 0.72) {
+                        basePoints += 8;
                     }
+
+                    state.combo = Math.max(1, state.combo + 1);
+                    state.comboTimer = 1.8;
+                    const points = Math.round((basePoints * precision * comboMultiplier) + streakBonus);
 
                     state.hits += 1;
                     state.score += points;
+                    state.specialCharge = Math.min(100, state.specialCharge + (hitTarget.variant === 'boss' ? 28 : hitTarget.variant === 'rare' ? 18 : 10));
                     addImpact(x, y);
                     addFloatScore(x, y, points);
+                    createComboBanner(x, y, `x${Math.max(1, state.combo)}`);
                     playHitSound(bullseye);
+
+                    if (hitTarget.variant === 'boss') {
+                        const bossCenterX = hitTarget.x + hitTarget.size / 2;
+                        const bossCenterY = hitTarget.y + hitTarget.size / 2;
+                        game.classList.add('slowmo');
+                        triggerKillCam(bossCenterX, bossCenterY);
+                        triggerKoFlash(bossCenterX, bossCenterY);
+                        playKoSound();
+                        setTimeout(() => game.classList.remove('slowmo'), 420);
+                        updateMissionText('Boss down');
+                    }
+
                     removeTarget(hitTarget, true);
 
                     const index = state.targets.findIndex((item) => item === hitTarget);
@@ -1021,6 +1562,8 @@
                         state.targets.splice(index, 1);
                     }
                 } else {
+                    state.combo = 0;
+                    state.comboTimer = 0;
                     addImpact(x, y);
                 }
 
@@ -1037,8 +1580,9 @@
                     const targetCenterX = item.x + item.size / 2;
                     const targetCenterY = item.y + item.size / 2;
                     const distance = Math.hypot(x - targetCenterX, y - targetCenterY);
+                    const tolerance = item.variant === 'boss' ? item.size * 0.65 : item.variant === 'rare' ? item.size * 0.58 : item.size * 0.54;
 
-                    if (distance <= item.size * 0.56 && distance < bestDistance) {
+                    if (distance <= tolerance && distance < bestDistance) {
                         bestDistance = distance;
                         best = item;
                     }
@@ -1066,12 +1610,102 @@
                 gameOverOverlay.classList.remove('hidden');
             }
 
+            function triggerBossIntro() {
+                if (!bossIntroOverlay || !state || !state.running) return;
+                bossIntroOverlay.classList.remove('hidden');
+                bossIntroOverlay.classList.remove('show');
+                void bossIntroOverlay.offsetWidth;
+                bossIntroOverlay.classList.add('show');
+                playBossIntroSound();
+                setTimeout(() => {
+                    if (bossIntroOverlay) bossIntroOverlay.classList.add('hidden');
+                }, 1400);
+            }
+
+            function triggerKillCam(x = game.clientWidth / 2, y = game.clientHeight / 2) {
+                if (!killCam) return;
+                const frame = killCam.querySelector('#killCamFrame');
+                const text = killCam.querySelector('#killCamText');
+                if (frame) {
+                    frame.style.left = `${x}px`;
+                    frame.style.top = `${y}px`;
+                }
+                if (text) {
+                    text.style.left = `${x}px`;
+                    text.style.top = `${y + 42}px`;
+                }
+                killCam.classList.remove('show');
+                killCam.classList.remove('hidden');
+                void killCam.offsetWidth;
+                killCam.classList.add('show');
+                setTimeout(() => killCam.classList.add('hidden'), 480);
+            }
+
+            function triggerKoFlash(x = game.clientWidth / 2, y = game.clientHeight / 2) {
+                if (!koFlash) return;
+                koFlash.style.left = `${x}px`;
+                koFlash.style.top = `${y}px`;
+                koFlash.classList.remove('show');
+                koFlash.classList.remove('hidden');
+                void koFlash.offsetWidth;
+                koFlash.classList.add('show');
+                setTimeout(() => koFlash.classList.add('hidden'), 260);
+            }
+
+            function updateWaveMission() {
+                if (!state) return;
+                const nextWave = Math.max(1, Math.floor((selectedSeconds - state.timeLeft) / 7) + 1);
+                if (nextWave !== state.level) {
+                    state.level = nextWave;
+                    if (nextWave <= 2) {
+                        updateMissionText('Mission: Street clean sweep');
+                    } else if (nextWave <= 4) {
+                        updateMissionText('Mission: Fast hands');
+                    } else {
+                        updateMissionText('Mission: Boss pressure');
+                    }
+                } else if (state.combo >= 4) {
+                    updateMissionText('Mission: Hot streak');
+                }
+
+                if (state.level >= 3 && !state.bossIntroSeen) {
+                    state.bossIntroSeen = true;
+                    triggerBossIntro();
+                }
+
+                if (state.level >= 2 && state.combo >= 5) {
+                    updateMissionText('Clean streak');
+                }
+            }
+
+            function activateBossPattern() {
+                if (!state || !state.running) return;
+                if (state.targets.length === 0) return;
+
+                const bossTarget = state.targets.find((item) => item.variant === 'boss');
+                if (!bossTarget) return;
+
+                bossTarget.phase += 0.35;
+                bossTarget.vx = Math.sin(bossTarget.phase) * 32;
+                bossTarget.vy = Math.cos(bossTarget.phase * 1.25) * 28;
+            }
+
             function loop(ts) {
                 if (!state || !state.running) return;
 
                 const dt = Math.min((ts - state.lastTs) / 1000 || 0.016, 0.05);
                 state.lastTs = ts;
                 state.timeLeft -= dt;
+
+                if (state.comboTimer > 0) {
+                    state.comboTimer -= dt;
+                    if (state.comboTimer <= 0) state.combo = 0;
+                }
+
+                updateWaveMission();
+                if (state.level >= 3 && Math.random() < 0.013) {
+                    activateBossPattern();
+                }
 
                 if (state.timeLeft <= 0) {
                     state.timeLeft = 0;
@@ -1101,8 +1735,17 @@
                     reloading: false,
                     targets: [],
                     lastTs: performance.now(),
+                    combo: 0,
+                    comboTimer: 0,
+                    level: 1,
+                    specialCharge: 0,
+                    bossIntroSeen: false,
                 };
 
+                bossIntroOverlay.classList.add('hidden');
+                if (killCam) killCam.classList.add('hidden');
+                if (koFlash) koFlash.classList.add('hidden');
+                updateMissionText('Mission: Lock and load');
                 updateHud();
                 spawnTargets();
                 rafId = requestAnimationFrame(loop);
@@ -1122,6 +1765,7 @@
                     state = null;
                     targetsLayer.innerHTML = '';
                     effectsLayer.innerHTML = '';
+                    updateMissionText('Mission: Lock on');
                     updateHud();
                 });
 
@@ -1131,9 +1775,16 @@
                     }
                 });
 
+                specialBtn.addEventListener('click', () => {
+                    if (state && state.running) {
+                        fireSpecialBurst();
+                    }
+                });
+
                 game.addEventListener('pointerdown', (event) => {
                     if (!state || !state.running) return;
                     if (event.target.closest('#reloadBtn')) return;
+                    if (event.target.closest('#specialBtn')) return;
                     event.preventDefault();
 
                     const rect = game.getBoundingClientRect();

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camera Roll</title>
+    <style>
+        :root {
+            --bg-1: #0f111a;
+            --bg-2: #1a1b2e;
+            --bg-3: #2a1d30;
+            --card: rgba(255,255,255,0.08);
+            --line: rgba(255,255,255,0.14);
+            --text: #fff7f2;
+            --muted: rgba(255,255,255,0.7);
+            --gold: #ffd67a;
+            --pink: #ff96b5;
+            --cream: #ffe6b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            background: radial-gradient(circle at top, #1a1d2b 0%, var(--bg-1) 35%, #090b11 100%);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 14px 40px;
+        }
+
+        .camera-page {
+            width: min(100%, 430px);
+            min-height: 820px;
+            background: rgba(12, 14, 22, 0.72);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.32);
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            position: relative;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 18px 10px;
+            gap: 12px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            text-decoration: none;
+            border: 1px solid var(--line);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        h1 {
+            flex: 1;
+            text-align: center;
+            margin: 0;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .camera-filters {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 0 18px 12px;
+        }
+
+        .camera-filters span {
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--line);
+            font-size: 0.58rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .instruction,
+        .complete-banner {
+            margin: 0 18px 14px;
+            text-align: center;
+            padding: 10px 12px;
+            border-radius: 14px;
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            line-height: 1.5;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--line);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .complete-banner {
+            display: none;
+            background: linear-gradient(135deg, rgba(255, 214, 122, 0.12), rgba(255, 150, 181, 0.12));
+            color: #fff1c4;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            padding: 6px 18px 18px;
+            min-height: 180px;
+        }
+
+        .gallery-photo {
+            position: relative;
+            appearance: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 12px 25px rgba(8, 9, 12, 0.22);
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            aspect-ratio: 4 / 5;
+        }
+
+        .gallery-photo.photo-wide {
+            grid-column: span 2;
+            aspect-ratio: 5 / 4;
+        }
+
+        .gallery-photo.photo-square {
+            aspect-ratio: 1;
+        }
+
+        .gallery-photo.photo-tall {
+            aspect-ratio: 4 / 6;
+        }
+
+        .gallery-photo::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.30));
+        }
+
+        .gallery-photo:active {
+            transform: scale(0.97) rotate(-2deg);
+        }
+
+        .gallery-photo.peeling {
+            animation: peel 0.8s ease forwards;
+        }
+
+        @keyframes peel {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: rotate(-16deg) translateX(-120%) scale(0.8); opacity: 0; }
+        }
+
+        .tag,
+        .vibe {
+            position: absolute;
+            z-index: 1;
+            left: 10px;
+            border-radius: 999px;
+            padding: 6px 8px;
+            font-size: 0.5rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 700;
+            background: rgba(0,0,0,0.26);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.16);
+        }
+
+        .tag { top: 10px; }
+        .vibe {
+            left: auto;
+            right: 10px;
+            bottom: 10px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .surprise-zone {
+            display: none;
+            padding: 14px 18px 28px;
+            text-align: center;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .surprise-zone.show {
+            display: block;
+        }
+
+        .surprise-text {
+            font-size: 1.4rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #ffeec3;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .cake-wrap {
+            position: relative;
+            width: min(84%, 330px);
+            margin: 12px auto 0;
+        }
+
+        .cake-wrap svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 18px 26px rgba(0,0,0,0.2));
+        }
+
+        .cake-flame {
+            position: absolute;
+            width: 18px;
+            height: 28px;
+            left: 50%;
+            top: 36px;
+            transform: translateX(-50%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            background: linear-gradient(to bottom, #fffbb2 0%, #ffd75a 35%, #ff7a3d 100%);
+            box-shadow: 0 0 18px rgba(255,180,60,0.8), 0 0 32px rgba(255,126,50,0.7);
+            animation: flicker 0.7s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-4deg); }
+            100% { transform: translateX(-50%) scale(1.12) rotate(4deg); }
+        }
+
+        .balloon {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: min(75vw, 280px);
+            transform: translateX(-50%) translateY(-18px) scale(0.8);
+            opacity: 0;
+            transition: all 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .surprise-zone.show .balloon {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        .balloon img {
+            width: 100%;
+            display: block;
+            filter: drop-shadow(0 18px 30px rgba(255, 209, 112, 0.38));
+        }
+
+        @media (max-width: 420px) {
+            .camera-page {
+                min-height: 100vh;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="camera-page">
+        <div class="topbar">
+            <a class="back-btn" href="index.html" aria-label="Back">←</a>
+            <h1>Camera Roll</h1>
+        </div>
+
+        <div class="camera-filters">
+            <span>archive</span>
+            <span>chaos</span>
+            <span>vibes</span>
+        </div>
+
+        <div class="instruction" id="instructionText">Swipe or tap each photo away to unlock the birthday surprise ✨</div>
+        <div class="complete-banner" id="completeBanner">Surprise unlocked 🎂</div>
+
+        <div class="gallery" id="photoGallery"></div>
+
+        <div class="surprise-zone" id="surpriseZone">
+            <div class="surprise-text">HAPPY BIRTHDAYY NOOB</div>
+            <div class="balloon">
+                <img src="Birthday Confetti  Ballon.svg" alt="Birthday balloon" />
+            </div>
+            <div class="cake-wrap">
+                <div class="cake-flame"></div>
+                <svg viewBox="0 0 420 290" aria-label="Birthday cake">
+                    <defs>
+                        <linearGradient id="cakePink" x1="0%" x2="100%" y1="0%" y2="0%">
+                            <stop offset="0%" stop-color="#ff8cb1" />
+                            <stop offset="100%" stop-color="#ff6d8e" />
+                        </linearGradient>
+                        <linearGradient id="cakeGreen" x1="0%" x2="100%" y1="0%" y2="0%">
+                            <stop offset="0%" stop-color="#4ad68a" />
+                            <stop offset="100%" stop-color="#29b669" />
+                        </linearGradient>
+                        <linearGradient id="cakeGold" x1="0%" x2="100%" y1="0%" y2="0%">
+                            <stop offset="0%" stop-color="#ffd660" />
+                            <stop offset="100%" stop-color="#ffb934" />
+                        </linearGradient>
+                    </defs>
+                    <g>
+                        <ellipse cx="210" cy="250" rx="135" ry="16" fill="rgba(0,0,0,0.18)" />
+                        <path d="M120 182 L300 182 L324 224 L96 224 Z" fill="url(#cakePink)" />
+                        <path d="M136 143 L284 143 L302 182 L118 182 Z" fill="url(#cakeGreen)" />
+                        <path d="M156 110 L264 110 L285 143 L135 143 Z" fill="url(#cakeGold)" />
+                        <g fill="white" opacity="0.9">
+                            <circle cx="170" cy="122" r="8" />
+                            <circle cx="198" cy="128" r="8" />
+                            <circle cx="226" cy="130" r="8" />
+                            <circle cx="254" cy="124" r="8" />
+                        </g>
+                        <g>
+                            <rect x="200" y="62" width="18" height="48" rx="5" fill="#345" />
+                            <rect x="196" y="56" width="26" height="14" rx="6" fill="#e2f1ff" />
+                        </g>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <audio id="birthdayAudio" preload="auto" src="assets/Traditional - Happy Birthday (Karaoke Version) [aF8voKa_3Us].mp3"></audio>
+
+    <script>
+        const photos = [
+            { tag: 'archive', vibe: 'campus chaos', image: 'memephoto/image copy.png', size: 'photo-tall', rotate: '-2deg' },
+            { tag: 'vibes', vibe: 'good energy', image: 'memephoto/image copy 2.png', size: 'photo-wide', rotate: '2deg' },
+            { tag: 'lost', vibe: 'soft glow', image: 'memephoto/image copy 3.png', size: 'photo-square', rotate: '-1deg' },
+            { tag: 'art', vibe: 'luffy mode', image: 'memephoto/image copy 4.png', size: 'photo-square', rotate: '2.5deg' },
+            { tag: 'study', vibe: 'library mood', image: 'memephoto/image copy 5.png', size: 'photo-tall', rotate: '1deg' },
+            { tag: 'feed', vibe: 'restaurant run', image: 'memephoto/image copy 6.png', size: 'photo-wide', rotate: '-2.3deg' },
+            { tag: 'wild', vibe: 'new place', image: 'memephoto/image copy 7.png', size: 'photo-square', rotate: '2deg' },
+            { tag: 'laughs', vibe: 'inside jokes', image: 'memephoto/image copy 8.png', size: 'photo-tall', rotate: '-1.5deg' },
+            { tag: 'relapse', vibe: 'hard days', image: 'memephoto/image copy 9.png', size: 'photo-wide', rotate: '1.6deg' },
+            { tag: 'iconic', vibe: 'birthday energy', image: 'memephoto/image copy 10.png', size: 'photo-square', rotate: '-2.2deg' }
+        ];
+
+        const gallery = document.getElementById('photoGallery');
+        const instructionText = document.getElementById('instructionText');
+        const completeBanner = document.getElementById('completeBanner');
+        const surpriseZone = document.getElementById('surpriseZone');
+        const birthdayAudio = document.getElementById('birthdayAudio');
+
+        gallery.innerHTML = photos.map((photo) => `
+            <button class="gallery-photo ${photo.size}" type="button" data-photo="${photo.tag}" style="background-image: url('${photo.image}'); transform: rotate(${photo.rotate});" aria-label="${photo.tag} ${photo.vibe}">
+                <span class="tag">${photo.tag}</span>
+                <span class="vibe">${photo.vibe}</span>
+            </button>
+        `).join('');
+
+        function startBirthdayAudio() {
+            if (!birthdayAudio) return;
+            birthdayAudio.muted = false;
+            birthdayAudio.currentTime = 0;
+            birthdayAudio.play().catch(() => {});
+        }
+
+        function triggerCelebration() {
+            if (surpriseZone.classList.contains('show')) return;
+            surpriseZone.classList.add('show');
+            if (completeBanner) completeBanner.style.display = 'block';
+            if (instructionText) instructionText.style.display = 'none';
+            startBirthdayAudio();
+        }
+
+        function updateGalleryState() {
+            const remaining = [...document.querySelectorAll('.gallery-photo')].filter((photo) => photo.style.display !== 'none');
+            if (remaining.length === 0) {
+                triggerCelebration();
+                return;
+            }
+
+            if (instructionText) instructionText.style.display = 'block';
+            if (completeBanner) completeBanner.style.display = 'none';
+        }
+
+        function peelPhoto(photo) {
+            if (photo.classList.contains('peeling')) return;
+            photo.classList.add('peeling');
+            setTimeout(() => {
+                photo.style.display = 'none';
+                updateGalleryState();
+            }, 700);
+        }
+
+        document.querySelectorAll('.gallery-photo').forEach((photo) => {
+            photo.addEventListener('click', () => peelPhoto(photo));
+        });
+    </script>
+</body>
+</html>

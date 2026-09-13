@@ -85,6 +85,15 @@
             font-size: 1rem;
         }
 
+        .game-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 40px rgba(74, 54, 62, 0.12);
+        }
+
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -315,10 +324,35 @@
             .page-shell {
                 padding-left: 14px;
                 padding-right: 14px;
+                padding-top: 18px;
+            }
+
+            .topbar {
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+            }
+
+            .intro {
+                padding: 18px 16px;
             }
 
             .games-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .game-card {
+                min-height: 260px;
+                padding: 18px 16px;
+            }
+
+            .score-row {
+                align-items: flex-start;
+                flex-direction: column;
             }
         }
     </style>
@@ -331,7 +365,7 @@
         </div>
 
         <div class="intro">
-            <p>Pick a mini game, enjoy the vibes, and let the birthday fun keep rolling.</p>
+            <p>Birthday arcade mode unlocked. Pick a mini game, embrace the chaos, and let the good energy keep rolling.</p>
         </div>
 
         <div class="games-grid">

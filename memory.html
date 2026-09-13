@@ -7,28 +7,74 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
+        :root {
+            --bg1: #fff4ef;
+            --bg2: #f7e5ef;
+            --panel: rgba(255,255,255,0.6);
+            --primary: #e77a9d;
+            --secondary: #f7b56d;
+            --accent: #7d74d8;
+            --card-front: #fffaf7;
+            --card-back: linear-gradient(135deg, #ffcfb7 0%, #ff9ab8 100%);
+            --success: #5ed69a;
+            --text: #2d1e2f;
+            --muted: #685868;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(180deg, #f7efe6 0%, #f0e2d3 100%);
-            color: #2c1d1d;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(255,215,185,0.8), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(176,164,255,0.28), transparent 32%),
+                linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
             display: flex;
             justify-content: center;
-            padding: 24px 16px;
+            padding: 22px 16px;
         }
 
         .game-shell {
-            width: min(760px, 100%);
-            background: rgba(255,255,255,0.42);
-            border: 1px solid rgba(58, 41, 47, 0.08);
-            border-radius: 28px;
-            box-shadow: 0 18px 40px rgba(74, 54, 62, 0.08);
-            padding: 22px;
+            width: min(820px, 100%);
+            background: var(--panel);
+            border: 1px solid rgba(70, 50, 70, 0.08);
+            border-radius: 30px;
+            box-shadow: 0 24px 50px rgba(75, 50, 64, 0.12);
+            backdrop-filter: blur(6px);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-shell::before,
+        .game-shell::after {
+            content: '';
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            filter: blur(30px);
+            opacity: 0.36;
+            pointer-events: none;
+        }
+
+        .game-shell::before {
+            background: rgba(255, 180, 120, 0.7);
+            top: -50px;
+            right: -20px;
+        }
+
+        .game-shell::after {
+            background: rgba(182, 155, 255, 0.6);
+            left: -40px;
+            bottom: -60px;
         }
 
         .topbar {
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -44,53 +90,137 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            background: rgba(255,255,255,0.72);
-            color: #2c1d1d;
+            background: rgba(255,255,255,0.74);
+            color: var(--text);
             font-size: 1.4rem;
             font-weight: 700;
+            box-shadow: 0 10px 20px rgba(94, 66, 72, 0.08);
         }
 
         h1 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 5vw, 2.8rem);
+            font-size: clamp(2.1rem, 5vw, 3rem);
             font-weight: 600;
+            letter-spacing: -0.04em;
+            text-align: center;
+            flex: 1;
+        }
+
+        .hud {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .hud-box {
+            background: rgba(255,255,255,0.72);
+            border-radius: 18px;
+            padding: 12px 14px;
+            box-shadow: inset 0 0 0 1px rgba(94, 66, 72, 0.04);
+        }
+
+        .hud-label {
+            display: block;
+            font-size: 0.73rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .hud-value {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #412b3a;
         }
 
         .status-row {
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            margin-bottom: 22px;
+            margin-bottom: 18px;
             flex-wrap: wrap;
         }
 
-        .score {
-            background: rgba(255,255,255,0.7);
+        .status-pill {
+            background: linear-gradient(135deg, rgba(255,206,171,0.9) 0%, rgba(255,173,199,0.9) 100%);
             border-radius: 999px;
-            padding: 9px 14px;
+            padding: 8px 14px;
             font-weight: 700;
-            color: #5a3e45;
+            color: #472f3d;
+            box-shadow: 0 8px 16px rgba(186, 116, 99, 0.15);
         }
 
         .button-row {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .small-btn {
             border: none;
-            background: linear-gradient(135deg, #ffbf69 0%, #ff8aaa 100%);
+            background: linear-gradient(135deg, #ffd08a 0%, #ff9fb8 100%);
             color: #2c1d1d;
-            font-weight: 700;
+            font-weight: 800;
             border-radius: 999px;
             padding: 10px 16px;
             cursor: pointer;
-            box-shadow: 0 10px 18px rgba(255, 150, 134, 0.25);
+            box-shadow: 0 10px 18px rgba(255, 150, 134, 0.24);
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .small-btn:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .small-btn.secondary {
+            background: linear-gradient(135deg, #cfe7ff 0%, #d7cfff 100%);
+        }
+
+        .progress-wrap {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 16px;
+        }
+
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .progress-bar {
+            position: relative;
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(90, 68, 87, 0.08);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #ffbf69 0%, #ff8aaa 50%, #8d7ef5 100%);
+            transition: width 0.28s ease;
         }
 
         .memory-grid {
+            position: relative;
+            z-index: 1;
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 14px;
@@ -98,31 +228,114 @@
         }
 
         .memory-card {
+            position: relative;
             aspect-ratio: 1;
             border: none;
-            border-radius: 18px;
-            font-size: 1.7rem;
-            background: linear-gradient(135deg, #ffd9c7 0%, #ffc4d8 100%);
-            box-shadow: inset 0 0 0 1px rgba(103, 76, 79, 0.08);
+            border-radius: 20px;
+            background: transparent;
             cursor: pointer;
-            transition: transform 0.18s ease, box-shadow 0.18s ease;
+            perspective: 1200px;
         }
 
-        .memory-card.flipped,
+        .memory-card-inner {
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            transform-style: preserve-3d;
+            transition: transform 0.52s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .memory-card.flipped .memory-card-inner,
+        .memory-card.matched .memory-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card-face {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            backface-visibility: hidden;
+            box-shadow: 0 14px 24px rgba(87, 58, 73, 0.12);
+            user-select: none;
+        }
+
+        .memory-card-front {
+            background: var(--card-back);
+            color: #fff;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 800;
+            transform: rotateY(180deg);
+            border: 1px solid rgba(255, 255, 255, 0.26);
+        }
+
+        .memory-card-back {
+            background: linear-gradient(135deg, #ffd7c4 0%, #ffb0c6 100%);
+            border: 1px solid rgba(120, 89, 95, 0.08);
+            font-size: 2.1rem;
+            color: rgba(93, 58, 70, 0.82);
+            box-shadow: inset 0 0 0 1px rgba(121, 86, 83, 0.08), 0 14px 24px rgba(87, 58, 73, 0.09);
+        }
+
+        .memory-card-back::before {
+            content: '✦';
+            display: block;
+            transform: scale(1.2);
+            animation: twinkle 1.4s ease-in-out infinite alternate;
+        }
+
+        .memory-card.matched .memory-card-front {
+            background: linear-gradient(135deg, #e2fbe8 0%, #baf0d2 100%);
+            color: #245746;
+            box-shadow: 0 12px 22px rgba(54, 148, 91, 0.2);
+        }
+
         .memory-card.matched {
-            background: linear-gradient(135deg, #ffffff 0%, #f3e9d9 100%);
-            box-shadow: 0 8px 18px rgba(88, 60, 76, 0.12);
+            animation: popMatch 0.35s ease;
         }
 
-        .memory-card.matched {
-            background: linear-gradient(135deg, #dff7ea 0%, #b8f0d0 100%);
+        .memory-card:not(.matched):not(.flipped):hover .memory-card-back {
+            transform: translateY(-2px);
         }
 
-        .memory-card:active {
-            transform: scale(0.97);
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 26px;
+            transform: translateX(-50%) translateY(24px);
+            opacity: 0;
+            background: rgba(35, 21, 34, 0.88);
+            color: #fff;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            pointer-events: none;
+            transition: all 0.25s ease;
+            z-index: 30;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @keyframes popMatch {
+            0% { transform: scale(0.94); }
+            45% { transform: scale(1.06); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes twinkle {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.2); opacity: 1; }
         }
 
         @media (max-width: 640px) {
+            .game-shell { padding: 16px; }
+            .hud { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .memory-grid { gap: 10px; }
             .topbar { align-items: flex-start; }
         }
@@ -135,25 +348,79 @@
             <h1>Memory Match</h1>
         </div>
 
+        <div class="hud">
+            <div class="hud-box">
+                <span class="hud-label">Level</span>
+                <span class="hud-value" id="levelValue">1</span>
+            </div>
+            <div class="hud-box">
+                <span class="hud-label">Moves</span>
+                <span class="hud-value" id="movesValue">0</span>
+            </div>
+            <div class="hud-box">
+                <span class="hud-label">Time</span>
+                <span class="hud-value" id="timeValue">00:00</span>
+            </div>
+            <div class="hud-box">
+                <span class="hud-label">Score</span>
+                <span class="hud-value" id="scoreValue">0</span>
+            </div>
+        </div>
+
         <div class="status-row">
-            <div class="score" id="memoryScore">Moves: 0</div>
+            <div class="status-pill" id="statusText">Ready to play</div>
             <div class="button-row">
-                <button class="small-btn" id="resetMemory">Restart</button>
+                <button class="small-btn secondary" id="nextLevelBtn" type="button">Next level</button>
+                <button class="small-btn" id="resetMemory" type="button">Restart</button>
+            </div>
+        </div>
+
+        <div class="progress-wrap">
+            <div class="progress-meta">
+                <span>Progress</span>
+                <span id="progressText">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
         </div>
 
         <div class="memory-grid" id="memoryGrid"></div>
     </div>
 
+    <div class="toast" id="toast">Level up!</div>
+
     <script>
-        const symbols = ['✨', '💖', '🎁', '🌸', '☀️', '🎉'];
+        const symbols = ['✨', '💖', '🎁', '🌸', '☀️', '🎉', '🩷', '💫', '🍓', '🌙', '🎀', '🔥'];
+        const levelConfig = [
+            { pairs: 4, label: 'Warm-up' },
+            { pairs: 6, label: 'Cute chaos' },
+            { pairs: 8, label: 'Pink panic' },
+            { pairs: 10, label: 'Legendary' }
+        ];
+
         const memoryGrid = document.getElementById('memoryGrid');
-        const memoryScore = document.getElementById('memoryScore');
+        const scoreValue = document.getElementById('scoreValue');
+        const movesValue = document.getElementById('movesValue');
+        const timeValue = document.getElementById('timeValue');
+        const levelValue = document.getElementById('levelValue');
+        const statusText = document.getElementById('statusText');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const toast = document.getElementById('toast');
         const resetMemory = document.getElementById('resetMemory');
+        const nextLevelBtn = document.getElementById('nextLevelBtn');
 
         let selectedCards = [];
         let moves = 0;
+        let score = 0;
+        let level = 0;
+        let matchedPairs = 0;
         let lockBoard = false;
+        let timer = 0;
+        let timerId = null;
+        let currentPairs = 4;
+        let audioCtx = null;
 
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -163,23 +430,119 @@
             return array;
         }
 
+        function ensureAudio() {
+            if (!audioCtx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) {
+                    audioCtx = new AudioCtx();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playTone(type, frequency = 440, duration = 0.12) {
+            if (!audioCtx) return;
+            const oscillator = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+            gain.gain.value = 0.001;
+            oscillator.connect(gain);
+            gain.connect(audioCtx.destination);
+            gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + duration);
+        }
+
+        function playSound(name) {
+            ensureAudio();
+            if (!audioCtx) return;
+            if (name === 'flip') playTone('triangle', 420, 0.09);
+            if (name === 'match') {
+                playTone('sine', 620, 0.12);
+                setTimeout(() => playTone('triangle', 790, 0.12), 70);
+            }
+            if (name === 'wrong') playTone('sawtooth', 200, 0.12);
+            if (name === 'level') {
+                playTone('square', 600, 0.13);
+                setTimeout(() => playTone('triangle', 760, 0.13), 90);
+            }
+            if (name === 'win') {
+                playTone('triangle', 500, 0.14);
+                setTimeout(() => playTone('triangle', 650, 0.14), 110);
+                setTimeout(() => playTone('triangle', 800, 0.14), 220);
+            }
+        }
+
+        function updateHud() {
+            movesValue.textContent = String(moves);
+            scoreValue.textContent = String(score);
+            levelValue.textContent = String(level + 1);
+            timeValue.textContent = formatTime(timer);
+            progressText.textContent = `${Math.round((matchedPairs / currentPairs) * 100)}%`;
+            progressFill.style.width = `${(matchedPairs / currentPairs) * 100}%`;
+        }
+
+        function formatTime(value) {
+            const minutes = String(Math.floor(value / 60)).padStart(2, '0');
+            const seconds = String(value % 60).padStart(2, '0');
+            return `${minutes}:${seconds}`;
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(showToast.timeoutId);
+            showToast.timeoutId = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1200);
+        }
+
+        function startTimer() {
+            clearInterval(timerId);
+            timer = 0;
+            timerId = setInterval(() => {
+                timer += 1;
+                timeValue.textContent = formatTime(timer);
+            }, 1000);
+        }
+
         function buildBoard() {
-            const deck = shuffle([...symbols, ...symbols]);
-            memoryGrid.innerHTML = '';
+            const config = levelConfig[level] || levelConfig[levelConfig.length - 1];
+            currentPairs = config.pairs;
+            matchedPairs = 0;
             selectedCards = [];
             lockBoard = false;
             moves = 0;
-            memoryScore.textContent = 'Moves: 0';
+            score = Math.max(0, score);
+            memoryGrid.innerHTML = '';
+            memoryGrid.style.gridTemplateColumns = `repeat(${Math.min(4, Math.ceil(Math.sqrt(currentPairs * 2)))}, minmax(0, 1fr))`;
 
-            deck.forEach((symbol) => {
+            const chosenSymbols = shuffle(symbols.slice()).slice(0, config.pairs);
+            const deck = shuffle([...chosenSymbols, ...chosenSymbols]);
+
+            deck.forEach((symbol, index) => {
                 const card = document.createElement('button');
                 card.type = 'button';
                 card.className = 'memory-card';
                 card.dataset.symbol = symbol;
-                card.textContent = '?';
+                card.dataset.id = String(index);
+                card.innerHTML = `
+                    <div class="memory-card-inner">
+                        <div class="memory-card-face memory-card-back"></div>
+                        <div class="memory-card-face memory-card-front">${symbol}</div>
+                    </div>
+                `;
                 card.addEventListener('click', () => flipCard(card));
                 memoryGrid.appendChild(card);
             });
+
+            updateHud();
+            statusText.textContent = `${config.label} • ${config.pairs} pairs`;
+            startTimer();
         }
 
         function flipCard(card) {
@@ -187,38 +550,89 @@
                 return;
             }
 
-            card.textContent = card.dataset.symbol;
             card.classList.add('flipped');
+            card.setAttribute('aria-label', 'Flipped card');
             selectedCards.push(card);
+            playSound('flip');
 
             if (selectedCards.length === 2) {
-                moves++;
-                memoryScore.textContent = `Moves: ${moves}`;
+                moves += 1;
+                updateHud();
                 lockBoard = true;
 
                 const [first, second] = selectedCards;
                 if (first.dataset.symbol === second.dataset.symbol) {
+                    matchedPairs += 1;
+                    score += 120 + (level * 35) + Math.max(0, 18 - moves) * 4;
+                    updateHud();
+                    playSound('match');
+
                     setTimeout(() => {
                         first.classList.add('matched');
                         second.classList.add('matched');
                         selectedCards = [];
                         lockBoard = false;
-                    }, 250);
+                        statusText.textContent = 'Nice match!';
+                        if (matchedPairs >= currentPairs) {
+                            finishLevel();
+                        }
+                    }, 220);
                 } else {
+                    score = Math.max(0, score - 10);
+                    updateHud();
+                    playSound('wrong');
                     setTimeout(() => {
-                        first.textContent = '?';
-                        second.textContent = '?';
                         first.classList.remove('flipped');
                         second.classList.remove('flipped');
                         selectedCards = [];
                         lockBoard = false;
-                    }, 700);
+                        statusText.textContent = 'Not this time';
+                    }, 720);
                 }
             }
         }
 
-        resetMemory.addEventListener('click', buildBoard);
+        function finishLevel() {
+            clearInterval(timerId);
+            playSound('win');
+            score += Math.max(0, 60 - timer) + level * 25;
+            updateHud();
+            statusText.textContent = 'Board cleared!';
+            showToast(level === levelConfig.length - 1 ? 'Legendary win!' : 'Level up!');
+            if (level < levelConfig.length - 1) {
+                nextLevelBtn.disabled = false;
+                nextLevelBtn.textContent = `Next level (${level + 2})`;
+            } else {
+                nextLevelBtn.disabled = true;
+                nextLevelBtn.textContent = 'Final level cleared';
+            }
+        }
+
+        function goToNextLevel() {
+            if (level < levelConfig.length - 1) {
+                level += 1;
+                playSound('level');
+                nextLevelBtn.disabled = true;
+                nextLevelBtn.textContent = 'Next level';
+                buildBoard();
+                showToast(`Level ${level + 1}: ${levelConfig[level].label}`);
+            }
+        }
+
+        resetMemory.addEventListener('click', () => {
+            score = 0;
+            level = 0;
+            nextLevelBtn.disabled = false;
+            nextLevelBtn.textContent = 'Next level';
+            buildBoard();
+            showToast('Fresh round!');
+        });
+
+        nextLevelBtn.addEventListener('click', goToNextLevel);
+
         buildBoard();
+        nextLevelBtn.disabled = false;
+        nextLevelBtn.textContent = 'Next level';
     </script>
 </body>
 </html>

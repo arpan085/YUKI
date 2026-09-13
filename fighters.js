@@ -144,6 +144,10 @@ export function createFighter(definition, side, x) {
     downCounter: 0,
     downTimer: 0,
     lastDecision: 0,
-    aiTimer: 0
+    aiTimer: 0,
+    swing: 0,
+    reaction: 0,
+    step: 0,
+    poseShift: 0
   };
 }

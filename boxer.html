@@ -71,6 +71,26 @@
         </div>
       </div>
 
+      <div id="introOverlay" class="intro-overlay hidden">
+        <div class="intro-panel">
+          <div id="introBadge" class="intro-badge">OPENING BELL</div>
+          <h2 id="introTitle">BOSS FIGHT</h2>
+          <div id="introSubtitle" class="intro-subtitle">HEROINE vs VILLAIN 6</div>
+        </div>
+      </div>
+
+      <div id="bossIntroOverlay" class="boss-intro-overlay hidden">
+        <div class="boss-intro-panel">
+          <div class="boss-intro-header">
+            <span id="bossIntroName">VILLAIN 6</span>
+            <span id="bossIntroLevel">WORLD TITLE</span>
+          </div>
+          <div class="boss-health-shell">
+            <div id="bossHealthBar" class="boss-health-bar"></div>
+          </div>
+        </div>
+      </div>
+
       <div id="touchControls" class="hidden">
         <div class="touch-controls-left">
           <div id="joystickPad" class="joystick-pad" aria-label="Movement joystick">
@@ -86,6 +106,7 @@
             <button type="button" class="touch-button action" data-action="uppercut">UPPER</button>
           </div>
           <div class="controls-row extra">
+            <button type="button" class="touch-button action special" data-action="special">SPECIAL</button>
             <button type="button" class="touch-button action" data-action="block">BLOCK</button>
             <button type="button" class="touch-button action" data-action="dodge">DODGE</button>
           </div>
@@ -175,6 +196,15 @@
             <button data-action="settings">SETTINGS</button>
             <button data-action="menu">BACK TO MENU</button>
           </div>
+        </div>
+      </div>
+
+      <div id="bossEndOverlay" class="boss-end-overlay hidden">
+        <div class="boss-end-flash"></div>
+        <div class="boss-end-panel">
+          <div id="bossEndBadge" class="boss-end-badge">KNOCKOUT</div>
+          <h2 id="bossEndTitle">THE BOSS IS DOWN</h2>
+          <div id="bossEndTaunt" class="boss-end-taunt">VILLAIN 6 FALLS TO THE FLOOR</div>
         </div>
       </div>
 

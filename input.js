@@ -22,6 +22,7 @@ export class InputHandler {
       if (key === 'k') this.actions.add('cross');
       if (key === 'l') this.actions.add('hook');
       if (key === 'i') this.actions.add('uppercut');
+      if (key === 'v') this.actions.add('special');
       if (key === 's') this.actions.add('block');
       if (key === ' ' || code === 'Space') this.actions.add('dodge');
       if (key === 'escape') this.actions.add('pause');

@@ -41,23 +41,32 @@ const fighterArtCache = new Map();
 const state = {
   settings: { ...defaultSettings },
   stats: { ...defaultStats },
-  selectedFighter: 'rookie',
-  enemyDefinition: 'heavy',
+  selectedFighter: 'heroine',
+  enemyDefinition: 'villain6',
   timer: 90,
+  round: 1,
   battleActive: false,
   resultOutcome: null,
   player: null,
   enemy: null,
   lastTimestamp: 0,
   gameOver: false,
-  shakeAmount: 0
+  shakeAmount: 0,
+  flash: 0,
+  crowdPulse: 0,
+  introTimer: 0,
+  slowMo: 0,
+  bossMode: false,
+  endingSequence: false,
+  endingTimer: 0
 };
 
 const attackMap = {
   jab: { damage: 9, range: 82, cost: 8, hitWindow: 0.18, label: 'JAB' },
   cross: { damage: 14, range: 92, cost: 12, hitWindow: 0.2, label: 'CROSS' },
   hook: { damage: 18, range: 102, cost: 16, hitWindow: 0.23, label: 'HOOK' },
-  uppercut: { damage: 22, range: 108, cost: 18, hitWindow: 0.26, label: 'UPPERCUT' }
+  uppercut: { damage: 22, range: 108, cost: 18, hitWindow: 0.26, label: 'UPPERCUT' },
+  special: { damage: 30, range: 120, cost: 24, hitWindow: 0.35, label: 'SPECIAL' }
 };
 
 function loadSettings() {
@@ -268,9 +277,14 @@ function resumeBattle() {
 
 function renderFighterCards() {
   const fighterGrid = document.getElementById('fighterGrid');
-  const selectableFighters = fighterDefinitions.filter((fighter) => fighter.role !== 'opponent');
+  const playableFighters = [...fighterDefinitions.filter((fighter) => fighter.role !== 'opponent')];
+  playableFighters.sort((a, b) => {
+    if (a.id === 'heroine') return -1;
+    if (b.id === 'heroine') return 1;
+    return 0;
+  });
 
-  fighterGrid.innerHTML = selectableFighters
+  fighterGrid.innerHTML = playableFighters
     .map((fighter) => {
       const portraitStyle = fighter.artPath
         ? `background-image: url('${fighter.artPath}'); background-size: cover; background-position: center;`
@@ -320,10 +334,24 @@ function startBattle(selectedFighterId) {
   state.gameOver = false;
   state.resultOutcome = null;
   state.timer = 90;
+  state.round = 1;
   state.shakeAmount = 0;
+  state.flash = 0;
+  state.crowdPulse = 0;
+  state.introTimer = 2.2;
+  state.slowMo = 0;
+  state.bossMode = enemyDefinition.id === 'villain6';
 
   ai.setDifficulty(state.settings.difficulty);
   ui.setNames(playerDefinition.name, enemyDefinition.name);
+  document.getElementById('introTitle').textContent = state.bossMode ? 'BOSS FIGHT' : 'OPENING BELL';
+  document.getElementById('introSubtitle').textContent = `${playerDefinition.name} vs ${enemyDefinition.name}`;
+  document.getElementById('introBadge').textContent = state.bossMode ? 'WORLD TITLE' : 'OPENING BELL';
+  document.getElementById('introOverlay').classList.remove('hidden');
+  document.getElementById('bossIntroOverlay').classList.toggle('hidden', !state.bossMode);
+  document.getElementById('bossIntroName').textContent = enemyDefinition.name;
+  document.getElementById('bossIntroLevel').textContent = state.bossMode ? 'WORLD TITLE' : 'RIVAL';
+  document.getElementById('bossHealthBar').style.width = '100%';
   ui.showHUD(true);
   ui.setTouchVisible(isTouchDevice());
   audio.ensure();
@@ -337,6 +365,18 @@ function resetBattleState() {
   state.battleActive = false;
   state.gameOver = false;
   state.timer = 90;
+  state.round = 1;
+  state.flash = 0;
+  state.crowdPulse = 0;
+  state.introTimer = 0;
+  state.slowMo = 0;
+  state.bossMode = false;
+  state.endingSequence = false;
+  state.endingTimer = 0;
+  const intro = document.getElementById('introOverlay');
+  if (intro) intro.classList.add('hidden');
+  const bossEnd = document.getElementById('bossEndOverlay');
+  if (bossEnd) bossEnd.classList.add('hidden');
 }
 
 function attemptAttack(attacker, defender, attackType) {
@@ -364,6 +404,8 @@ function attemptAttack(attacker, defender, attackType) {
     damage: attackData.damage,
     range: attackData.range
   };
+  attacker.swing = 1;
+  attacker.reaction = 0.5;
   attacker.state = attackType;
   attacker.attackCooldown = attackData.hitWindow;
 
@@ -390,14 +432,22 @@ function attemptAttack(attacker, defender, attackType) {
   damage = Math.max(2, Math.round(damage));
 
   defender.hp = Math.max(0, defender.hp - damage);
-  defender.damageFlash = 0.15;
-  defender.stunned = Math.max(defender.stunned, 0.12);
+  defender.damageFlash = 0.18;
+  defender.reaction = 0.8;
+  defender.stunned = Math.max(defender.stunned, 0.12 + attackData.hitWindow * 0.2);
   defender.combo = 1;
+  state.shakeAmount = Math.min(22, state.shakeAmount + (blocked ? 4 : 10));
+  state.flash = Math.min(1, state.flash + (blocked ? 0.12 : 0.22));
 
   if (attacker === state.player) {
     attacker.combo = Math.min(9, attacker.combo + 1);
     attacker.comboTimer = 1.25;
     state.stats.bestCombo = Math.max(state.stats.bestCombo, attacker.combo);
+
+    if (attacker.combo >= 3) {
+      ui.showToast(`COMBO x${attacker.combo}`);
+      effects.spawnText(attacker.x, attacker.y - 92, `COMBO x${attacker.combo}`, '#ffe08f');
+    }
   }
 
   effects.spawnParticles(defender.x, defender.y - 28, blocked ? '#9ac5ff' : '#ffcf73', blocked ? 10 : 18);
@@ -406,9 +456,22 @@ function attemptAttack(attacker, defender, attackType) {
   audio.playSfx(attackType);
   audio.playSfx('hit');
 
+  if (!blocked && defender.hp < 24 && Math.random() < 0.5 + attacker.stats.power * 0.18) {
+    defender.downTimer = 1.05;
+    defender.state = 'down';
+    effects.spawnText(defender.x, defender.y - 90, 'DOWN!', '#ff8c8c');
+    audio.playSfx('knockdown');
+    state.shakeAmount = Math.min(30, state.shakeAmount + 12);
+  }
+
   if (defender.hp <= 0) {
     defender.isKO = true;
     attacker.combo = 1;
+    state.shakeAmount = 16;
+    state.flash = 1;
+    state.slowMo = 0.5;
+    state.bossMode = state.bossMode || attacker === state.enemy || defender === state.enemy;
+    audio.playSfx('ko');
     endBattle(attacker === state.player ? 'player' : 'enemy', 'KO');
   }
 
@@ -444,6 +507,7 @@ function handleInput(dt) {
   if (input.consume('cross')) attemptAttack(player, enemy, 'cross');
   if (input.consume('hook')) attemptAttack(player, enemy, 'hook');
   if (input.consume('uppercut')) attemptAttack(player, enemy, 'uppercut');
+  if (input.consume('special')) attemptAttack(player, enemy, 'special');
 
   player.x = Math.max(210, Math.min(1060, player.x));
   state.enemy.x = Math.max(210, Math.min(1060, state.enemy.x));
@@ -510,10 +574,27 @@ function updateFighter(dt, fighter) {
   }
 }
 
+function hideIntro() {
+  const intro = document.getElementById('introOverlay');
+  if (intro) intro.classList.add('hidden');
+}
+
 function updateBattle(dt) {
   if (!state.battleActive || !state.player || !state.enemy) return;
 
+  if (state.introTimer > 0) {
+    state.introTimer = Math.max(0, state.introTimer - dt);
+    if (state.introTimer === 0) {
+      hideIntro();
+      ui.showToast(state.bossMode ? 'BOSS FIGHT' : 'FIGHT');
+    }
+    return;
+  }
+
   state.timer = Math.max(0, state.timer - dt);
+  state.shakeAmount = Math.max(0, state.shakeAmount - dt * 18);
+  state.flash = Math.max(0, state.flash - dt * 0.8);
+  state.crowdPulse += dt * 5.5;
 
   handleInput(dt);
 
@@ -533,6 +614,7 @@ function updateBattle(dt) {
     state.player.combo,
     state.player.hp > state.enemy.hp ? 'PRESSURE' : 'FIGHT'
   );
+  updateBossStatus();
 
   if (state.timer <= 0) {
     if (state.player.hp === state.enemy.hp) {
@@ -548,11 +630,44 @@ function endBattle(winner, reason) {
   state.gameOver = true;
   state.battleActive = false;
   state.resultOutcome = winner;
+  state.slowMo = Math.max(state.slowMo, reason === 'KO' ? 0.46 : 0.18);
+  state.endingSequence = true;
+  state.endingTimer = state.bossMode && winner === 'player' ? 2.3 : 1.2;
+
+  const bossIntro = document.getElementById('bossIntroOverlay');
+  if (bossIntro) bossIntro.classList.add('hidden');
+
+  const bossEndOverlay = document.getElementById('bossEndOverlay');
+  if (bossEndOverlay) {
+    const bossEndTitle = document.getElementById('bossEndTitle');
+    const bossEndTaunt = document.getElementById('bossEndTaunt');
+    const bossEndBadge = document.getElementById('bossEndBadge');
+
+    if (state.bossMode && winner === 'player') {
+      bossEndBadge.textContent = 'KNOCKOUT';
+      bossEndTitle.textContent = 'THE BOSS IS DOWN';
+      bossEndTaunt.textContent = `${state.enemyName.toUpperCase()} FALLS TO THE FLOOR`;
+    } else if (winner === 'player') {
+      bossEndBadge.textContent = 'VICTORY';
+      bossEndTitle.textContent = 'YOU WON';
+      bossEndTaunt.textContent = 'THE CROWD ERUPTS';
+    } else if (winner === 'enemy') {
+      bossEndBadge.textContent = 'DEFEAT';
+      bossEndTitle.textContent = 'YOU GOT HIT';
+      bossEndTaunt.textContent = 'THE FIGHT ENDS IN SHADOW';
+    } else {
+      bossEndBadge.textContent = 'DRAW';
+      bossEndTitle.textContent = 'FULL TIME';
+      bossEndTaunt.textContent = 'THE BELL CALLS IT EVEN';
+    }
+
+    bossEndOverlay.classList.remove('hidden');
+  }
 
   if (winner === 'player') {
     state.stats.wins += 1;
     state.stats.totalFights += 1;
-    ui.showToast('Victory');
+    ui.showToast(reason === 'KO' ? 'KO! VICTORY' : 'Victory');
     audio.playSfx('win');
     document.getElementById('resultTitle').textContent = 'PLAYER WINS';
     document.getElementById('resultText').textContent = reason === 'KO' ? 'You finished the fight with a decisive knockout.' : 'You won on points after the final bell.';
@@ -580,16 +695,30 @@ function endBattle(winner, reason) {
 
   saveStats();
   ui.renderStats();
-  showScreen('resultScreen');
   ui.showHUD(false);
 }
 
 function update(dt) {
+  const worldDt = state.slowMo > 0 ? dt * 0.26 : dt;
+  if (state.slowMo > 0) {
+    state.slowMo = Math.max(0, state.slowMo - dt);
+  }
+
+  if (state.endingSequence) {
+    state.endingTimer = Math.max(0, state.endingTimer - dt);
+    if (state.endingTimer === 0) {
+      state.endingSequence = false;
+      const bossEndOverlay = document.getElementById('bossEndOverlay');
+      if (bossEndOverlay) bossEndOverlay.classList.add('hidden');
+      showScreen('resultScreen');
+    }
+  }
+
   if (state.settings.particles) {
     effects.update(dt);
   }
 
-  updateBattle(dt);
+  updateBattle(worldDt);
 
   if (!state.battleActive && !state.gameOver) {
     if (state.settings.particles) {
@@ -597,10 +726,16 @@ function update(dt) {
     }
   }
 }
-
+function updateBossStatus() {
+  const bossBar = document.getElementById('bossHealthBar');
+  if (!bossBar || !state.enemy || !state.bossMode) return;
+  const healthRatio = Math.max(0, state.enemy.hp / state.enemy.maxHp) * 100;
+  bossBar.style.width = `${healthRatio}%`;
+}
 function drawBackground() {
   const w = canvas.width;
   const h = canvas.height;
+  const pulse = 0.5 + Math.sin(state.crowdPulse) * 0.5;
 
   const sky = ctx.createLinearGradient(0, 0, 0, h);
   sky.addColorStop(0, '#0d1930');
@@ -609,20 +744,30 @@ function drawBackground() {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
 
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 24; i++) {
     const x = (i * 77) % w;
-    const y = 40 + (i % 6) * 18;
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    const y = 40 + (i % 6) * 18 + Math.sin((i + state.crowdPulse) * 1.7) * 4;
+    ctx.fillStyle = `rgba(255,255,255,${0.08 + (i % 3) * 0.05})`;
     ctx.fillRect(x, y, 2, 2);
   }
+
+  const crowdGradient = ctx.createRadialGradient(w / 2, 180, 80, w / 2, 180, 520);
+  crowdGradient.addColorStop(0, `rgba(255, 215, 120, ${0.14 + pulse * 0.06})`);
+  crowdGradient.addColorStop(0.4, 'rgba(143, 203, 255, 0.12)');
+  crowdGradient.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = crowdGradient;
+  ctx.fillRect(0, 0, w, h);
 
   ctx.fillStyle = '#5f4a33';
   ctx.fillRect(0, 420, w, 20);
 
-  ctx.fillStyle = '#8d5f2a';
-  ctx.fillRect(0, 440, w, 140);
+  const ringGlow = ctx.createLinearGradient(0, 420, 0, 620);
+  ringGlow.addColorStop(0, '#a9702d');
+  ringGlow.addColorStop(1, '#5c3723');
+  ctx.fillStyle = ringGlow;
+  ctx.fillRect(0, 440, w, 160);
 
-  ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(110, 460);
@@ -639,12 +784,25 @@ function drawBackground() {
   ctx.lineTo(w - 170, 540);
   ctx.stroke();
 
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 11; i++) {
+    const ringX = 160 + i * 92;
+    ctx.beginPath();
+    ctx.moveTo(ringX, 438);
+    ctx.lineTo(ringX, 600);
+    ctx.stroke();
+  }
+
   ctx.fillStyle = 'rgba(255,255,255,0.08)';
   for (let i = 0; i < 30; i++) {
     const x = (i * 52) % w;
-    const y = 230 + (i % 4) * 30;
+    const y = 230 + (i % 4) * 30 + Math.sin(i + state.crowdPulse) * 2;
     ctx.fillRect(x, y, 56, 10);
   }
+
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.fillRect(0, 610, w, 10);
 }
 
 function drawFighter(fighter) {
@@ -653,39 +811,49 @@ function drawFighter(fighter) {
   const x = fighter.x;
   const y = fighter.y;
   const facing = fighter.facing;
-  const shadowX = x;
+  const t = performance.now() * 0.006;
+  const breath = Math.sin(t + fighter.x * 0.03) * (fighter.guard ? 2 : 6);
+  const step = Math.sin(t * 8 + fighter.x * 0.08) * (fighter.state === 'moving' ? 10 : 4);
+  const lean = fighter.attack ? (fighter.facing > 0 ? -0.25 : 0.25) : Math.sin(t * 1.7 + fighter.x * 0.05) * 0.12;
+  const stanceOffset = fighter.guard ? 6 : 0;
+  const swingAmount = fighter.attack ? (fighter.attack.type === 'uppercut' ? 1.2 : 0.9) : 0;
+  const shadowX = x + (fighter.side === 'enemy' ? 6 : -6);
 
   ctx.save();
-  ctx.translate(shadowX, y + 16);
+  ctx.translate(shadowX, y + 18 + breath * 0.15);
   ctx.fillStyle = 'rgba(0,0,0,0.35)';
   ctx.beginPath();
-  ctx.ellipse(0, 0, 56, 18, 0, 0, Math.PI * 2);
+  ctx.ellipse(0, 0, 58 + Math.sin(t) * 3, 18 + Math.cos(t) * 2, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 
   ctx.save();
-  ctx.translate(x, y);
+  ctx.translate(x + step * 0.4, y + breath + fighter.reaction * 2);
+  ctx.rotate(lean + fighter.reaction * 0.25);
   ctx.scale(facing, 1);
 
   if (fighter.image && fighter.image.complete) {
-    ctx.drawImage(fighter.image, -82, -150, 164, 250);
+    const poseX = fighter.guard ? 12 : 0;
+    const poseY = fighter.dodgeTimer > 0 ? -8 : 0;
+    ctx.filter = fighter.damageFlash > 0 ? 'brightness(1.3) saturate(1.3)' : 'none';
+    ctx.drawImage(fighter.image, -82 + poseX, -155 + poseY, 164, 250);
   } else {
     if (fighter.damageFlash > 0) {
       ctx.fillStyle = `rgba(255, 180, 180, ${fighter.damageFlash * 1.5})`;
-      ctx.fillRect(-60, -90, 120, 150);
+      ctx.fillRect(-60, -100, 120, 170);
     }
 
     ctx.strokeStyle = fighter.colors.glove;
     ctx.lineWidth = 6;
     ctx.beginPath();
-    ctx.moveTo(0, 26);
-    ctx.lineTo(-18, 52);
-    ctx.moveTo(0, 26);
-    ctx.lineTo(18, 52);
+    ctx.moveTo(-6 + stanceOffset, 10);
+    ctx.lineTo(-18 - swingAmount * 18, 52 + step * 0.22);
+    ctx.moveTo(18 - stanceOffset, 10);
+    ctx.lineTo(30 + swingAmount * 18, 52 + step * 0.22);
     ctx.stroke();
 
     ctx.fillStyle = fighter.colors.primary;
-    ctx.fillRect(-24, -18, 48, 72);
+    ctx.fillRect(-26, -12, 52, 76);
 
     ctx.fillStyle = fighter.colors.secondary;
     ctx.fillRect(-22, -60, 44, 42);
@@ -696,32 +864,35 @@ function drawFighter(fighter) {
     ctx.fill();
 
     ctx.fillStyle = '#1d1d1d';
-    ctx.fillRect(-28, 54, 16, 48);
-    ctx.fillRect(12, 54, 16, 48);
+    ctx.fillRect(-26, 64, 16, 48 + step * 0.15);
+    ctx.fillRect(10, 64, 16, 48 - step * 0.15);
 
     ctx.fillStyle = fighter.colors.glove;
-    ctx.fillRect(-38, 90, 18, 12);
-    ctx.fillRect(20, 90, 18, 12);
+    ctx.fillRect(-36, 92, 18, 12);
+    ctx.fillRect(18, 92, 18, 12);
   }
 
   if (fighter.guard) {
     ctx.strokeStyle = '#9be0ff';
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.arc(0, -12, 42, Math.PI * 0.17, Math.PI * 0.83);
+    ctx.arc(0, -10, 42 + fighter.swing * 6, Math.PI * 0.15, Math.PI * 0.85);
     ctx.stroke();
   }
 
   if (fighter.attack) {
+    const swing = fighter.attack.type === 'uppercut' ? 34 : 26;
+    const reach = fighter.attack.timer > 0 ? 1 - fighter.attack.timer / 0.26 : 0;
+    const uppercutOffset = fighter.attack.type === 'uppercut' ? 8 : 0;
     ctx.fillStyle = '#ffe3a0';
-    ctx.fillRect((facing > 0 ? 18 : -48), 6, 30, 16);
+    ctx.fillRect(facing > 0 ? 18 + reach * 12 : -48 - swing - reach * 12, 6 - uppercutOffset, swing, 16);
   }
 
   if (fighter.aura) {
     ctx.strokeStyle = fighter.aura;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.arc(0, -12, 54, 0, Math.PI * 2);
+    ctx.arc(0, -12, 54 + Math.sin(t * 2.5) * 4 + fighter.swing * 10, 0, Math.PI * 2);
     ctx.stroke();
   }
 
@@ -729,25 +900,42 @@ function drawFighter(fighter) {
 }
 
 function render() {
+  const shakeX = state.shakeAmount > 0 ? (Math.random() - 0.5) * state.shakeAmount * 2.4 : 0;
+  const shakeY = state.shakeAmount > 0 ? (Math.random() - 0.5) * state.shakeAmount * 1.6 : 0;
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(shakeX, shakeY);
   drawBackground();
 
   if (state.player) drawFighter(state.player);
   if (state.enemy) drawFighter(state.enemy);
 
   effects.draw(ctx);
+  ctx.restore();
 
   ctx.fillStyle = 'rgba(10, 17, 28, 0.7)';
   ctx.fillRect(28, 28, 200, 54);
   ctx.fillStyle = '#f9d77a';
   ctx.font = '900 22px Arial';
-  ctx.fillText(`ROUND 1`, 46, 62);
+  ctx.fillText(`ROUND ${state.round}`, 46, 62);
 
   ctx.fillStyle = 'rgba(10, 17, 28, 0.7)';
   ctx.fillRect(canvas.width - 230, 28, 200, 54);
   ctx.fillStyle = '#7ec7ff';
   ctx.font = '900 22px Arial';
   ctx.fillText(`TIME ${Math.ceil(state.timer)}`, canvas.width - 196, 62);
+
+  if (state.flash > 0) {
+    ctx.fillStyle = `rgba(255,255,255,${state.flash * 0.16})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  if (state.player && state.enemy && (state.player.hp < 18 || state.enemy.hp < 18)) {
+    const danger = Math.max(state.player.hp, state.enemy.hp) < 20 ? 0.25 : 0;
+    ctx.fillStyle = `rgba(255, 92, 92, ${danger})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
 }
 
 function loop(timestamp) {
