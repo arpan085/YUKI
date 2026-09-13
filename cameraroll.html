@@ -181,24 +181,35 @@
         .vibe {
             position: absolute;
             z-index: 1;
-            left: 10px;
-            border-radius: 999px;
-            padding: 6px 8px;
-            font-size: 0.5rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            font-weight: 700;
-            background: rgba(0,0,0,0.26);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.16);
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .tag { top: 10px; }
+        .tag {
+            top: 10px;
+            left: 10px;
+            display: none;
+        }
+
         .vibe {
             left: auto;
             right: 10px;
             bottom: 10px;
-            background: rgba(255,255,255,0.1);
+            display: none;
+        }
+
+        .gallery-photo.only-yuki .tag {
+            display: inline-flex;
+            opacity: 1;
+            padding: 6px 8px;
+            border-radius: 999px;
+            background: rgba(0,0,0,0.26);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.16);
+            font-size: 0.5rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 700;
         }
 
         .surprise-zone {
@@ -347,16 +358,16 @@
 
     <script>
         const photos = [
-            { tag: 'archive', vibe: 'campus chaos', image: 'memephoto/image copy.png', size: 'photo-tall', rotate: '-2deg' },
-            { tag: 'vibes', vibe: 'good energy', image: 'memephoto/image copy 2.png', size: 'photo-wide', rotate: '2deg' },
-            { tag: 'lost', vibe: 'soft glow', image: 'memephoto/image copy 3.png', size: 'photo-square', rotate: '-1deg' },
-            { tag: 'art', vibe: 'luffy mode', image: 'memephoto/image copy 4.png', size: 'photo-square', rotate: '2.5deg' },
-            { tag: 'study', vibe: 'library mood', image: 'memephoto/image copy 5.png', size: 'photo-tall', rotate: '1deg' },
-            { tag: 'feed', vibe: 'restaurant run', image: 'memephoto/image copy 6.png', size: 'photo-wide', rotate: '-2.3deg' },
-            { tag: 'wild', vibe: 'new place', image: 'memephoto/image copy 7.png', size: 'photo-square', rotate: '2deg' },
-            { tag: 'laughs', vibe: 'inside jokes', image: 'memephoto/image copy 8.png', size: 'photo-tall', rotate: '-1.5deg' },
-            { tag: 'relapse', vibe: 'hard days', image: 'memephoto/image copy 9.png', size: 'photo-wide', rotate: '1.6deg' },
-            { tag: 'iconic', vibe: 'birthday energy', image: 'memephoto/image copy 10.png', size: 'photo-square', rotate: '-2.2deg' }
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy.png', size: 'photo-tall', rotate: '-2deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 2.png', size: 'photo-wide', rotate: '2deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 3.png', size: 'photo-square', rotate: '-1deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 4.png', size: 'photo-square', rotate: '2.5deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 5.png', size: 'photo-tall', rotate: '1deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 6.png', size: 'photo-wide', rotate: '-2.3deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 7.png', size: 'photo-square', rotate: '2deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 8.png', size: 'photo-tall', rotate: '-1.5deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 9.png', size: 'photo-wide', rotate: '1.6deg', subtle: true },
+            { tag: 'Yuki', vibe: '', image: 'memephoto/image copy 10.png', size: 'photo-square', rotate: '-2.2deg', subtle: true }
         ];
 
         const gallery = document.getElementById('photoGallery');
@@ -366,7 +377,7 @@
         const birthdayAudio = document.getElementById('birthdayAudio');
 
         gallery.innerHTML = photos.map((photo) => `
-            <button class="gallery-photo ${photo.size}" type="button" data-photo="${photo.tag}" style="background-image: url('${photo.image}'); transform: rotate(${photo.rotate});" aria-label="${photo.tag} ${photo.vibe}">
+            <button class="gallery-photo ${photo.size} ${photo.subtle ? 'only-yuki' : ''}" type="button" data-photo="${photo.tag}" style="background-image: url('${photo.image}'); transform: rotate(${photo.rotate});" aria-label="${photo.tag}">
                 <span class="tag">${photo.tag}</span>
                 <span class="vibe">${photo.vibe}</span>
             </button>
